@@ -15,10 +15,41 @@ app.get('/analytics', (req, res) => {
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 function readDB() {
-  return JSON.parse(fs.readFileSync(DB_PATH, 'utf8'));
+  try {
+    const tmpPath = path.join('/tmp', 'db.json');
+    if (fs.existsSync(tmpPath)) {
+      return JSON.parse(fs.readFileSync(tmpPath, 'utf8'));
+    }
+  } catch (e) {
+    console.error('Erro ao ler do /tmp/db.json:', e.message);
+  }
+  try {
+    return JSON.parse(fs.readFileSync(DB_PATH, 'utf8'));
+  } catch (e) {
+    console.error('Erro ao ler db.json do root:', e.message);
+    return { configs: { page: {}, fields: [], whatsappUrl: "", googleSheetsWebhookUrl: "" }, stats: { visits: 0, clicks: 0, submissions: 0 }, leads: [] };
+  }
 }
+
 function writeDB(data) {
-  fs.writeFileSync(DB_PATH, JSON.stringify(data, null, 2));
+  let success = false;
+  // Tentar escrever no path principal do root
+  try {
+    fs.writeFileSync(DB_PATH, JSON.stringify(data, null, 2));
+    success = true;
+  } catch (err) {
+    console.warn('Alerta: Não foi possível salvar em db.json principal (ambiente read-only).');
+  }
+
+  // Tentar escrever no /tmp para persistência na sessão atual (Vercel)
+  try {
+    const tmpPath = path.join('/tmp', 'db.json');
+    fs.writeFileSync(tmpPath, JSON.stringify(data, null, 2));
+    success = true;
+  } catch (err) {
+    console.error('Erro ao salvar em /tmp/db.json:', err.message);
+  }
+  return success;
 }
 
 // ── Track visit ───────────────────────────────────────────────────────────────
@@ -40,11 +71,14 @@ app.post('/api/click', (req, res) => {
 // ── Get page config ───────────────────────────────────────────────────────────
 app.get('/api/config', (req, res) => {
   const db = readDB();
+  const whatsappUrl = process.env.WHATSAPP_URL || db.configs.whatsappUrl || "";
+  const googleSheetsWebhookUrl = process.env.WEBHOOK_URL || process.env.GOOGLE_SHEETS_WEBHOOK_URL || db.configs.googleSheetsWebhookUrl || "";
+
   res.json({
     page: db.configs.page,
     fields: db.configs.fields,
-    whatsappUrl: db.configs.whatsappUrl,
-    googleSheetsWebhookUrl: db.configs.googleSheetsWebhookUrl || ""
+    whatsappUrl: whatsappUrl,
+    googleSheetsWebhookUrl: googleSheetsWebhookUrl
   });
 });
 
@@ -60,10 +94,13 @@ app.post('/api/submit', async (req, res) => {
   db.stats.submissions++;
   writeDB(db);
 
-  // Enviar para o Google Sheets (se configurado)
-  if (db.configs.googleSheetsWebhookUrl) {
+  // Enviar para o Webhook (se configurado via painel ou env)
+  const webhookUrl = process.env.WEBHOOK_URL || process.env.GOOGLE_SHEETS_WEBHOOK_URL || db.configs.googleSheetsWebhookUrl;
+  const whatsappUrl = process.env.WHATSAPP_URL || db.configs.whatsappUrl || "";
+
+  if (webhookUrl) {
     try {
-      fetch(db.configs.googleSheetsWebhookUrl, {
+      fetch(webhookUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -71,13 +108,13 @@ app.post('/api/submit', async (req, res) => {
           timestamp: lead.timestamp,
           ...req.body
         })
-      }).catch(err => console.error('Erro ao enviar para Google Sheets Webhook:', err.message));
+      }).catch(err => console.error('Erro ao enviar para o Webhook:', err.message));
     } catch (e) {
-      console.error('Erro na chamada fetch do Google Sheets:', e.message);
+      console.error('Erro na chamada fetch do Webhook:', e.message);
     }
   }
 
-  res.json({ ok: true, whatsappUrl: db.configs.whatsappUrl });
+  res.json({ ok: true, whatsappUrl: whatsappUrl });
 });
 
 // ── Analytics: get stats ──────────────────────────────────────────────────────
