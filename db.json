@@ -1,5 +1,6 @@
 {
   "configs": {
+    "googleSheetsWebhookUrl": "",
     "whatsappUrl": "https://api.whatsapp.com/send/?phone=5541984169584&text=Ol%C3%A1%2C%20sou%20{name}.%20Quero%20aplicar%20para%20a%20Sess%C3%A3o%20Estrat%C3%A9gica%20Gratuita.",
     "fields": [
       {
@@ -164,9 +165,27 @@
     }
   },
   "stats": {
-    "visits": 0,
-    "clicks": 0,
-    "submissions": 0
+    "visits": 1,
+    "clicks": 1,
+    "submissions": 1
   },
-  "leads": []
+  "leads": [
+    {
+      "id": 1784311649935,
+      "timestamp": "2026-07-17T18:07:29.935Z",
+      "name": "teste",
+      "email": "testeevento@gmail.com",
+      "whatsapp": "21971748472",
+      "role": "Proprietário(a)",
+      "revenue": "Entre R$100 mil e R$200 mil",
+      "operation_time": "Entre 5 e 10 anos",
+      "employees": "Entre 11 e 20",
+      "reality": "Tenho dificuldade em manter processos e padrão.",
+      "obstacles": "Falta de processos",
+      "frequency": "Não consigo tirar férias.",
+      "motivation": "Meu restaurante cresceu e minha forma de administrar não acompanha mais.",
+      "timeframe": "Não.",
+      "decision": "Eu e meu sócio."
+    }
+  ]
 }

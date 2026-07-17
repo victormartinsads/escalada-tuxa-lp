@@ -35,11 +35,16 @@ app.post('/api/click', (req, res) => {
 // ── Get page config ───────────────────────────────────────────────────────────
 app.get('/api/config', (req, res) => {
   const db = readDB();
-  res.json({ page: db.configs.page, fields: db.configs.fields, whatsappUrl: db.configs.whatsappUrl });
+  res.json({
+    page: db.configs.page,
+    fields: db.configs.fields,
+    whatsappUrl: db.configs.whatsappUrl,
+    googleSheetsWebhookUrl: db.configs.googleSheetsWebhookUrl || ""
+  });
 });
 
 // ── Save lead + submission ────────────────────────────────────────────────────
-app.post('/api/submit', (req, res) => {
+app.post('/api/submit', async (req, res) => {
   const db = readDB();
   const lead = {
     id: Date.now(),
@@ -49,6 +54,24 @@ app.post('/api/submit', (req, res) => {
   db.leads.push(lead);
   db.stats.submissions++;
   writeDB(db);
+
+  // Enviar para o Google Sheets (se configurado)
+  if (db.configs.googleSheetsWebhookUrl) {
+    try {
+      fetch(db.configs.googleSheetsWebhookUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id: lead.id,
+          timestamp: lead.timestamp,
+          ...req.body
+        })
+      }).catch(err => console.error('Erro ao enviar para Google Sheets Webhook:', err.message));
+    } catch (e) {
+      console.error('Erro na chamada fetch do Google Sheets:', e.message);
+    }
+  }
+
   res.json({ ok: true, whatsappUrl: db.configs.whatsappUrl });
 });
 
@@ -61,10 +84,11 @@ app.get('/api/stats', (req, res) => {
 // ── Analytics: update configs ─────────────────────────────────────────────────
 app.post('/api/admin/config', (req, res) => {
   const db = readDB();
-  const { page, fields, whatsappUrl } = req.body;
-  if (page)        db.configs.page        = { ...db.configs.page, ...page };
-  if (fields)      db.configs.fields      = fields;
-  if (whatsappUrl) db.configs.whatsappUrl = whatsappUrl;
+  const { page, fields, whatsappUrl, googleSheetsWebhookUrl } = req.body;
+  if (page)                   db.configs.page                   = { ...db.configs.page, ...page };
+  if (fields)                 db.configs.fields                 = fields;
+  if (whatsappUrl !== undefined) db.configs.whatsappUrl         = whatsappUrl;
+  if (googleSheetsWebhookUrl !== undefined) db.configs.googleSheetsWebhookUrl = googleSheetsWebhookUrl;
   writeDB(db);
   res.json({ ok: true });
 });

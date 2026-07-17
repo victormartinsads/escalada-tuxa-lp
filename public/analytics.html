@@ -156,6 +156,67 @@
           </div>
 
           <div class="bento-card" style="margin-top:20px">
+            <h3 class="card-title">Integração Google Sheets</h3>
+            <div class="form-group">
+              <label class="form-label" for="cfg-sheets-webhook">URL do Web App (Webhook do Apps Script)</label>
+              <input type="text" id="cfg-sheets-webhook" class="form-input" placeholder="https://script.google.com/macros/s/.../exec">
+              <p class="input-desc">Ao preencher, os leads serão enviados automaticamente para a sua planilha do Google Sheets.</p>
+            </div>
+            
+            <details class="sheets-instructions" style="margin-top: 14px; background: rgba(255,255,255,0.03); padding: 14px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05);">
+              <summary style="cursor: pointer; color: var(--gold); font-size: 13px; font-weight: 600;">Como configurar a planilha em 1 minuto? (Clique para ver)</summary>
+              <ol style="margin: 10px 0 0 16px; font-size: 12px; color: var(--text-secondary); line-height: 1.6; display: flex; flex-direction: column; gap: 6px;">
+                <li>Abra a sua planilha do Google.</li>
+                <li>Clique no menu superior em <strong>Extensões</strong> e depois em <strong>Apps Script</strong>.</li>
+                <li>Apague todo o código existente e cole o código abaixo.</li>
+                <li>Clique no ícone de disquete (Salvar) ou pressione Ctrl+S.</li>
+                <li>Clique no botão azul no canto superior direito: <strong>Implantar</strong> &gt; <strong>Nova implantação</strong>.</li>
+                <li>Clique no ícone de engrenagem ao lado de "Selecionar tipo" e escolha <strong>App da Web</strong>.</li>
+                <li>No campo "Quem pode acessar", mude para <strong>Qualquer pessoa</strong> (crucial para o envio funcionar).</li>
+                <li>Clique em <strong>Implantar</strong>. Autorize o acesso se solicitado pelo Google.</li>
+                <li>Copie o link do "URL" gerado (termina com <code>/exec</code>) e cole no campo acima!</li>
+              </ol>
+              <pre style="margin-top: 12px; background: #060c18; padding: 10px; border-radius: 6px; font-family: monospace; font-size: 11px; color: #a3b8cc; overflow-x: auto; max-height: 200px; border: 1px solid rgba(255,255,255,0.08);">
+function doPost(e) {
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+  try {
+    var data = JSON.parse(e.postData.contents);
+    if (sheet.getLastRow() === 0) {
+      var headers = ["Data", "Nome Completo", "E-mail Profissional", "WhatsApp de Contato"];
+      Object.keys(data).forEach(function(k) {
+        if (headers.indexOf(k) === -1 &amp;&amp; ["id","timestamp","name","email","whatsapp"].indexOf(k) === -1) {
+          headers.push(k);
+        }
+      });
+      sheet.appendRow(headers);
+    }
+    var headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
+    var row = [];
+    for (var i = 0; i < headers.length; i++) {
+      var h = headers[i];
+      if (h === "Data") {
+        row.push(new Date().toLocaleString("pt-BR"));
+      } else if (h === "Nome Completo") {
+        row.push(data.name || "");
+      } else if (h === "E-mail Profissional") {
+        row.push(data.email || "");
+      } else if (h === "WhatsApp de Contato") {
+        row.push(data.whatsapp || "");
+      } else {
+        row.push(data[h] || "");
+      }
+    }
+    sheet.appendRow(row);
+    return ContentService.createTextOutput(JSON.stringify({status:"success"})).setMimeType(ContentService.MimeType.JSON);
+  } catch(err) {
+    return ContentService.createTextOutput(JSON.stringify({status:"error",message:err.toString()})).setMimeType(ContentService.MimeType.JSON);
+  }
+}
+              </pre>
+            </details>
+          </div>
+
+          <div class="bento-card" style="margin-top:20px">
             <h3 class="card-title">Textos da Página</h3>
             <div class="form-grid">
 

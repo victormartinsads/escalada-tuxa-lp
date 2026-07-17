@@ -9,12 +9,34 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Outfit:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="index.css" />
+  <!-- Meta Pixel Code -->
+  <script>
+    !function(f,b,e,v,n,t,s)
+    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+    n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];
+    s.parentNode.insertBefore(t,s)}(window, document,'script',
+    'https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', '2085599052313814');
+    fbq('track', 'PageView');
+  </script>
+  <noscript><img height="1" width="1" style="display:none"
+    src="https://www.facebook.com/tr?id=2085599052313814&ev=PageView&noscript=1"
+  /></noscript>
+  <!-- End Meta Pixel Code -->
 </head>
 <body>
   <!-- ══ HERO ══════════════════════════════════════════════════════════════ -->
   <section class="hero" id="hero">
     <div class="hero__overlay"></div>
     <div class="hero__container">
+
+      <!-- Logo Tuxa Gonçalves (Print 2 style) -->
+      <div class="hero__logo-wrapper">
+        <img src="/assets/logo-tuxa.webp" alt="Tuxa Gonçalves" class="hero__logo">
+      </div>
 
       <!-- Pill badge -->
       <div class="hero__pill" id="hero-pill">
@@ -32,9 +54,15 @@
         Carregando…
       </p>
 
-      <!-- CTA -->
+      <!-- CTA (Print 2 layout with arrow inside circle) -->
       <button class="hero__cta" id="hero-cta">
-        Quero aplicar para a Sessão Estratégica Gratuita com a Tuxa
+        <span class="hero__cta-text">Quero aplicar para a Sessão Estratégica Gratuita com a Tuxa</span>
+        <span class="hero__cta-icon-wrapper">
+          <svg class="hero__cta-icon" viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2.5" fill="none">
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+            <polyline points="12 5 19 12 12 19"></polyline>
+          </svg>
+        </span>
       </button>
 
       <!-- Subtext under button -->

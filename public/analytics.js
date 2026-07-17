@@ -171,6 +171,7 @@ document.addEventListener('DOMContentLoaded', () => {
       document.getElementById('cfg-btn-color').value       = page.btnColor     || '';
       document.getElementById('cfg-btn-text-color').value  = page.btnTextColor || '';
       document.getElementById('cfg-whatsapp').value        = data.whatsappUrl  || '';
+      document.getElementById('cfg-sheets-webhook').value  = data.googleSheetsWebhookUrl || '';
 
       allFields = data.fields || [];
       renderBuilderFields();
@@ -192,12 +193,13 @@ document.addEventListener('DOMContentLoaded', () => {
       btnTextColor: document.getElementById('cfg-btn-text-color').value,
     };
     const whatsappUrl = document.getElementById('cfg-whatsapp').value;
+    const googleSheetsWebhookUrl = document.getElementById('cfg-sheets-webhook').value;
 
     try {
       const res = await fetch('/api/admin/config', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ page, whatsappUrl })
+        body: JSON.stringify({ page, whatsappUrl, googleSheetsWebhookUrl })
       });
       const data = await res.json();
       if (data.ok) showToast('Configurações salvas com sucesso!');

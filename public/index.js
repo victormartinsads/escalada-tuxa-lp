@@ -31,14 +31,21 @@ document.addEventListener('DOMContentLoaded', async () => {
       // Apply texts
       if (page.pill)        pillText.textContent  = page.pill;
       if (page.headline)    headline.innerHTML    = page.headline;
-      if (page.subheadline) subheadline.textContent = page.subheadline;
-      if (page.btnText)     ctaBtn.textContent    = page.btnText;
+      if (page.btnText) {
+        const textSpan = ctaBtn.querySelector('.hero__cta-text');
+        if (textSpan) textSpan.textContent = page.btnText;
+        else ctaBtn.textContent = page.btnText;
+      }
       if (page.btnSubtext) {
         const lines = page.btnSubtext.split('\n').filter(Boolean);
         btnSubtext.innerHTML = lines.map(l => `<span>${l}</span>`).join('');
       }
       if (page.btnColor)     ctaBtn.style.background = page.btnColor;
-      if (page.btnTextColor) ctaBtn.style.color       = page.btnTextColor;
+      if (page.btnTextColor) {
+        ctaBtn.style.color = page.btnTextColor;
+        const iconWrapper = ctaBtn.querySelector('.hero__cta-icon-wrapper');
+        if (iconWrapper) iconWrapper.style.color = page.btnTextColor;
+      }
 
       formFields  = data.fields  || [];
       whatsappUrl = data.whatsappUrl || '';
@@ -287,6 +294,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         body: JSON.stringify(payload)
       });
       const data = await res.json();
+
+      // Meta Pixel Lead event
+      if (window.fbq) {
+        fbq('track', 'Lead');
+      }
 
       let url = data.whatsappUrl || whatsappUrl;
       // Replace placeholders like {name}, {whatsapp}
