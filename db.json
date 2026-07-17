@@ -167,7 +167,7 @@
   "stats": {
     "visits": 1,
     "clicks": 1,
-    "submissions": 2
+    "submissions": 4
   },
   "leads": [
     {
@@ -193,6 +193,30 @@
       "name": "Teste Integracao",
       "email": "teste@tuxa.com",
       "whatsapp": "11999999999"
+    },
+    {
+      "id": 1784326065085,
+      "timestamp": "2026-07-17T22:07:45.085Z",
+      "name": "Teste Planilha Direta",
+      "email": "teste@tuxa.com",
+      "whatsapp": "11999999999"
+    },
+    {
+      "id": 1784326079621,
+      "timestamp": "2026-07-17T22:07:59.621Z",
+      "name": "Jo�o Silva",
+      "email": "joao@restaurante.com",
+      "whatsapp": "(11) 99999-9999",
+      "role": "Propriet�rio(a)",
+      "revenue": "Entre R$100 mil e R$200 mil",
+      "operation_time": "Entre 5 e 10 anos",
+      "employees": "Entre 11 e 20",
+      "reality": "O restaurante cresce, mas tudo ainda depende de mim.",
+      "obstacles": "Falta de processos, Pouco lucro",
+      "frequency": "Resolvo problemas o dia inteiro.",
+      "motivation": "Quero estruturar minha equipe e minha gest�o.",
+      "timeframe": "Sim.",
+      "decision": "Apenas eu."
     }
   ]
 }

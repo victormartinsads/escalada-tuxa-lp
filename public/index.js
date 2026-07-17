@@ -271,9 +271,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   btnBack.addEventListener('click', () => { if (currentStep > 0) goTo(currentStep - 1); });
   btnNext.addEventListener('click', () => { if (currentStep < steps.length - 1) goTo(currentStep + 1); });
-
   // ── Submit ────────────────────────────────────────────────────────────────
-  async function handleSubmit() {
+  function handleSubmit() {
     const submitBtn = document.getElementById('btn-submit');
     if (submitBtn) {
       submitBtn.disabled = true;
@@ -288,44 +287,35 @@ document.addEventListener('DOMContentLoaded', async () => {
       payload[k] = Array.isArray(v) ? v.join(', ') : v;
     });
 
+    // 1. Envia os dados para o servidor em background (fire-and-forget) com keepalive
+    fetch('/api/submit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+      keepalive: true
+    }).catch(err => console.error('Erro em segundo plano ao salvar lead:', err));
+
+    // 2. Dispara o evento de Lead do Meta Pixel de forma isolada
     try {
-      const res  = await fetch('/api/submit', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
+      if (typeof window.fbq === 'function') {
+        window.fbq('track', 'Lead');
+      }
+    } catch (metaErr) {
+      console.error('Meta Pixel error (non-fatal):', metaErr);
+    }
+
+    // 3. Monta a URL e redireciona instantaneamente
+    let url = whatsappUrl || '';
+    if (url) {
+      Object.keys(payload).forEach(k => {
+        const val = payload[k] !== undefined && payload[k] !== null ? payload[k] : '';
+        url = url.split(`{${k}}`).join(encodeURIComponent(val));
       });
-      const data = await res.json();
-
-      // Meta Pixel Lead event isolated in try-catch to prevent failure from blocking redirection
-      try {
-        if (typeof window.fbq === 'function') {
-          window.fbq('track', 'Lead');
-        }
-      } catch (metaErr) {
-        console.error('Meta Pixel error (non-fatal):', metaErr);
-      }
-
-      let url = data.whatsappUrl || whatsappUrl || '';
-      
-      // Safe replacement of placeholders like {name}, {whatsapp}
-      if (url) {
-        Object.keys(payload).forEach(k => {
-          const val = payload[k] !== undefined && payload[k] !== null ? payload[k] : '';
-          url = url.split(`{${k}}`).join(encodeURIComponent(val));
-        });
-        
-        // Immediate redirection
-        window.location.href = url;
-      } else {
-        throw new Error('Nenhuma URL do WhatsApp configurada.');
-      }
-    } catch (err) {
-      console.error('Erro na submissão:', err);
-      alert('Erro ao enviar as respostas. Por favor, tente novamente ou verifique sua conexão.');
-      if (submitBtn) {
-        submitBtn.disabled = false;
-        submitBtn.textContent = 'Enviar e Agendar →';
-      }
+      window.location.href = url;
+    } else {
+      console.error('Nenhuma URL do WhatsApp configurada.');
+      alert('Cadastro concluído com sucesso!');
+      window.location.href = 'https://api.whatsapp.com/send/?phone=5541984169584';
     }
   }
 
