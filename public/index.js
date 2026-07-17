@@ -31,6 +31,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       // Apply texts
       if (page.pill)        pillText.textContent  = page.pill;
       if (page.headline)    headline.innerHTML    = page.headline;
+      if (page.subheadline) subheadline.textContent = page.subheadline;
       if (page.btnText) {
         const textSpan = ctaBtn.querySelector('.hero__cta-text');
         if (textSpan) textSpan.textContent = page.btnText;
@@ -295,21 +296,32 @@ document.addEventListener('DOMContentLoaded', async () => {
       });
       const data = await res.json();
 
-      // Meta Pixel Lead event
-      if (window.fbq) {
-        fbq('track', 'Lead');
+      // Meta Pixel Lead event isolated in try-catch to prevent failure from blocking redirection
+      try {
+        if (typeof window.fbq === 'function') {
+          window.fbq('track', 'Lead');
+        }
+      } catch (metaErr) {
+        console.error('Meta Pixel error (non-fatal):', metaErr);
       }
 
-      let url = data.whatsappUrl || whatsappUrl;
-      // Replace placeholders like {name}, {whatsapp}
-      Object.keys(payload).forEach(k => {
-        url = url.replace(`{${k}}`, encodeURIComponent(payload[k] || ''));
-      });
-
-      setTimeout(() => { window.location.href = url; }, 300);
+      let url = data.whatsappUrl || whatsappUrl || '';
+      
+      // Safe replacement of placeholders like {name}, {whatsapp}
+      if (url) {
+        Object.keys(payload).forEach(k => {
+          const val = payload[k] !== undefined && payload[k] !== null ? payload[k] : '';
+          url = url.split(`{${k}}`).join(encodeURIComponent(val));
+        });
+        
+        // Immediate redirection
+        window.location.href = url;
+      } else {
+        throw new Error('Nenhuma URL do WhatsApp configurada.');
+      }
     } catch (err) {
-      console.error(err);
-      alert('Erro ao enviar. Tente novamente.');
+      console.error('Erro na submissão:', err);
+      alert('Erro ao enviar as respostas. Por favor, tente novamente ou verifique sua conexão.');
       if (submitBtn) {
         submitBtn.disabled = false;
         submitBtn.textContent = 'Enviar e Agendar →';
