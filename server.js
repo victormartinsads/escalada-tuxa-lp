@@ -139,11 +139,15 @@ app.post('/api/submit', async (req, res) => {
   const whatsappUrl = process.env.WHATSAPP_URL || db.configs.whatsappUrl || "";
 
   if (webhookUrl) {
-    postJSON(webhookUrl, {
-      id: lead.id,
-      timestamp: lead.timestamp,
-      ...req.body
-    }).catch(err => console.error('Erro ao enviar para o Webhook:', err.message));
+    try {
+      await postJSON(webhookUrl, {
+        id: lead.id,
+        timestamp: lead.timestamp,
+        ...req.body
+      });
+    } catch (err) {
+      console.error('Erro ao enviar para o Webhook:', err.message);
+    }
   }
 
   res.json({ ok: true, whatsappUrl: whatsappUrl });
