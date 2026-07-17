@@ -1,0 +1,193 @@
+{
+  "configs": {
+    "abEnabled": true,
+    "whatsappUrl": "https://api.whatsapp.com/send/?phone=5541984169584&text=Ol%C3%A1%2C%20sou%20{name}.%20Preenchi%20os%20dados%20da%20sess%C3%A3o%20estrat%C3%A9gica.%20Meu%20papel%20%C3%A9%20{role}%20e%20nossa%20maior%20dor%20hoje%20%C3%A9%3A%20{reality}",
+    "fields": [
+      {
+        "id": "name",
+        "label": "Nome Completo",
+        "type": "text",
+        "required": true,
+        "placeholder": "Digite seu nome completo"
+      },
+      {
+        "id": "email",
+        "label": "E-mail Profissional",
+        "type": "email",
+        "required": true,
+        "placeholder": "Digite seu melhor e-mail"
+      },
+      {
+        "id": "whatsapp",
+        "label": "WhatsApp de Contato",
+        "type": "tel",
+        "required": true,
+        "placeholder": "(00) 00000-0000"
+      },
+      {
+        "id": "role",
+        "label": "Qual é o seu papel dentro da empresa?",
+        "type": "radio",
+        "required": true,
+        "options": [
+          "Proprietário(a)",
+          "Sócio(a)",
+          "Gestor(a)",
+          "Gerente",
+          "Outro"
+        ]
+      },
+      {
+        "id": "revenue",
+        "label": "Qual o faturamento médio mensal do restaurante?",
+        "type": "radio",
+        "required": true,
+        "options": [
+          "Entre R$40 mil e R$ 70 mil",
+          "Entre R$70 mil e R$100 mil",
+          "Entre R$100 mil e R$200 mil",
+          "Entre R$200 mil e R$350 mil",
+          "Entre R$350 mil e R$500 mil",
+          "Acima de R$500 mil"
+        ]
+      },
+      {
+        "id": "operation_time",
+        "label": "Há quanto tempo sua empresa está em operação?",
+        "type": "radio",
+        "required": true,
+        "options": [
+          "Menos de 2 anos",
+          "Entre 2 e 5 anos",
+          "Entre 5 e 10 anos",
+          "Mais de 10 anos"
+        ]
+      },
+      {
+        "id": "employees",
+        "label": "Quantos colaboradores trabalham hoje na empresa?",
+        "type": "radio",
+        "required": true,
+        "options": [
+          "Até 10",
+          "Entre 11 e 20",
+          "Entre 21 e 40",
+          "Mais de 40"
+        ]
+      },
+      {
+        "id": "reality",
+        "label": "Hoje, qual situação mais representa a realidade do seu restaurante?",
+        "type": "radio",
+        "required": true,
+        "options": [
+          "O restaurante cresce, mas tudo ainda depende de mim.",
+          "Minha equipe ainda não consegue operar com autonomia.",
+          "Tenho dificuldade em manter processos e padrão.",
+          "O faturamento aumentou, mas o lucro não acompanha.",
+          "Minha operação está desorganizada e preciso estruturar a empresa."
+        ]
+      },
+      {
+        "id": "obstacles",
+        "label": "O que mais está impedindo seu restaurante de crescer hoje? (Escolha até duas opções)",
+        "type": "checkbox",
+        "required": true,
+        "maxSelect": 2,
+        "options": [
+          "Falta de liderança da equipe",
+          "Baixa produtividade",
+          "Equipe sem comprometimento",
+          "Falta de processos",
+          "Falta de organização financeira",
+          "Pouco lucro",
+          "Excesso de trabalho no operacional",
+          "Outro"
+        ]
+      },
+      {
+        "id": "frequency",
+        "label": "Qual dessas situações acontece com mais frequência?",
+        "type": "radio",
+        "required": true,
+        "options": [
+          "Resolvo problemas o dia inteiro.",
+          "Minha equipe depende de mim para tudo.",
+          "Trabalho muito e sobra pouco lucro.",
+          "Não consigo tirar férias.",
+          "Apago incêndios todos os dias."
+        ]
+      },
+      {
+        "id": "motivation",
+        "label": "O que fez você buscar essa Sessão Estratégica neste momento?",
+        "type": "radio",
+        "required": true,
+        "options": [
+          "Quero preparar meu restaurante para crescer.",
+          "Estou cansado de resolver os mesmos problemas todos os dias.",
+          "Quero estruturar minha equipe e minha gestão.",
+          "Meu restaurante cresceu e minha forma de administrar não acompanha mais.",
+          "Preciso de uma visão estratégica para o próximo passo."
+        ]
+      },
+      {
+        "id": "timeframe",
+        "label": "Você pretende implementar melhorias na gestão da empresa nos próximos 90 dias?",
+        "type": "radio",
+        "required": true,
+        "options": [
+          "Sim.",
+          "Talvez.",
+          "Não."
+        ]
+      },
+      {
+        "id": "decision",
+        "label": "Quem participa da decisão de contratar uma consultoria estratégica?",
+        "type": "radio",
+        "required": true,
+        "options": [
+          "Apenas eu.",
+          "Eu e meu sócio.",
+          "Outro."
+        ]
+      }
+    ],
+    "versions": {
+      "A": {
+        "name": "Versão A (Original)",
+        "pill": "Referência em CURITIBA - PR",
+        "headline": "Se você tirar <span class=\"destaque\">15 dias de férias</span>, seu negócio sobrevive?",
+        "subheadline": "Descubra os padrões invisíveis que mantêm empresários de restaurantes, padarias e cafeterias PRESOS na operação mesmo depois de anos de experiência. Chega de contratar mais pessoas, você precisa desenvolver líderes.",
+        "btnText": "Quero sair do operacional",
+        "btnColor": "linear-gradient(135deg, #F7DC8A 0%, #E6C65A 50%, #C99A2E 100%)",
+        "btnTextColor": "#0A0A0A",
+        "whatsappUrl": ""
+      },
+      "B": {
+        "name": "Versão B (Dor de Cabeça na Operação)",
+        "pill": "Mudar de Vida e Focar na Estratégia",
+        "headline": "Seu restaurante funciona sem você ou você é <span class=\"destaque\">escravo dele?</span>",
+        "subheadline": "Aprenda a estruturar processos claros e treinar líderes de confiança para gerenciar seu estabelecimento gastronômico enquanto você foca na expansão ou tira férias tranquilamente.",
+        "btnText": "Quero Liberdade Operacional",
+        "btnColor": "#FFFFFF",
+        "btnTextColor": "#0A0A0A",
+        "whatsappUrl": ""
+      }
+    }
+  },
+  "stats": {
+    "A": {
+      "visits": 0,
+      "clicks": 0,
+      "submissions": 0
+    },
+    "B": {
+      "visits": 0,
+      "clicks": 0,
+      "submissions": 0
+    }
+  },
+  "leads": []
+}

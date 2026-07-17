@@ -1,0 +1,17 @@
+{
+  "name": "pagina-tuxa-ab-testing",
+  "version": "1.0.0",
+  "description": "Landing page recriada com teste A/B, formulário dinâmico e analytics de conversões",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "dependencies": {
+    "cookie-parser": "^1.4.6",
+    "express": "^4.19.2"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  }
+}
