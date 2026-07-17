@@ -1,6 +1,6 @@
 {
   "configs": {
-    "googleSheetsWebhookUrl": "https://script.google.com/macros/s/AKfycbxOq0rp4HOK6SIF0UMOHTz-0Nt7XwkDsFx8blIUhu9uScEl7JmfShi8hq3cGy-SdtHrQg/exec",
+    "googleSheetsWebhookUrl": "https://n8n.serveragenciaand.com/webhook/a681145c-c866-43f1-8a20-98a3dbb21a05",
     "whatsappUrl": "https://api.whatsapp.com/send/?phone=5541984169584&text=Ol%C3%A1%2C%20sou%20{name}.%20Quero%20aplicar%20para%20a%20Sess%C3%A3o%20Estrat%C3%A9gica%20Gratuita.",
     "fields": [
       {

@@ -112,7 +112,7 @@ app.post('/api/click', (req, res) => {
 app.get('/api/config', (req, res) => {
   const db = readDB();
   const whatsappUrl = process.env.WHATSAPP_URL || db.configs.whatsappUrl || "";
-  const googleSheetsWebhookUrl = process.env.WEBHOOK_URL || process.env.GOOGLE_SHEETS_WEBHOOK_URL || db.configs.googleSheetsWebhookUrl || "";
+  const googleSheetsWebhookUrl = process.env.WEBHOOK_URL || process.env.GOOGLE_SHEETS_WEBHOOK_URL || db.configs.googleSheetsWebhookUrl || "https://n8n.serveragenciaand.com/webhook/a681145c-c866-43f1-8a20-98a3dbb21a05";
 
   res.json({
     page: db.configs.page,
@@ -135,7 +135,7 @@ app.post('/api/submit', async (req, res) => {
   writeDB(db);
 
   // Enviar para o Webhook (se configurado via painel ou env)
-  const webhookUrl = process.env.WEBHOOK_URL || process.env.GOOGLE_SHEETS_WEBHOOK_URL || db.configs.googleSheetsWebhookUrl;
+  const webhookUrl = process.env.WEBHOOK_URL || process.env.GOOGLE_SHEETS_WEBHOOK_URL || db.configs.googleSheetsWebhookUrl || "https://n8n.serveragenciaand.com/webhook/a681145c-c866-43f1-8a20-98a3dbb21a05";
   const whatsappUrl = process.env.WHATSAPP_URL || db.configs.whatsappUrl || "";
 
   if (webhookUrl) {
