@@ -156,15 +156,35 @@
           </div>
 
           <div class="bento-card" style="margin-top:20px">
-            <h3 class="card-title">Integração Google Sheets</h3>
+            <h3 class="card-title">Integração via Webhook (Google Sheets, n8n, Make)</h3>
             <div class="form-group">
-              <label class="form-label" for="cfg-sheets-webhook">URL do Web App (Webhook do Apps Script)</label>
-              <input type="text" id="cfg-sheets-webhook" class="form-input" placeholder="https://script.google.com/macros/s/.../exec">
-              <p class="input-desc">Ao preencher, os leads serão enviados automaticamente para a sua planilha do Google Sheets.</p>
+              <label class="form-label" for="cfg-sheets-webhook">URL do Webhook / Web App</label>
+              <input type="text" id="cfg-sheets-webhook" class="form-input" placeholder="https://seu-n8n.com/webhook/... ou https://script.google.com/macros/s/.../exec">
+              <p class="input-desc">Ao cadastrar um link aqui, nossa página enviará automaticamente um JSON (POST) contendo os dados do lead para este endereço sempre que houver um novo cadastro.</p>
             </div>
             
-            <details class="sheets-instructions" style="margin-top: 14px; background: rgba(255,255,255,0.03); padding: 14px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05);">
-              <summary style="cursor: pointer; color: var(--gold); font-size: 13px; font-weight: 600;">Como configurar a planilha em 1 minuto? (Clique para ver)</summary>
+            <details class="sheets-instructions" style="margin-top: 14px; background: rgba(255,255,255,0.03); padding: 14px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05); margin-bottom: 12px;">
+              <summary style="cursor: pointer; color: var(--gold); font-size: 13px; font-weight: 600;">Estrutura do JSON enviado (Para configurar no n8n / Make)</summary>
+              <p style="font-size: 12px; color: var(--text-secondary); margin-top: 8px;">O n8n receberá um payload JSON neste formato:</p>
+              <pre style="margin-top: 8px; background: #060c18; padding: 10px; border-radius: 6px; font-family: monospace; font-size: 11px; color: #a3b8cc; overflow-x: auto; border: 1px solid rgba(255,255,255,0.08);">
+{
+  "id": 1784326438843,
+  "timestamp": "2026-07-17T22:32:13.123Z",
+  "name": "Nome do Lead",
+  "email": "lead@email.com",
+  "whatsapp": "(11) 99999-9999",
+  "role": "Proprietário(a)",
+  "revenue": "Entre R$40 mil e R$ 70 mil",
+  "operation_time": "Mais de 10 anos",
+  "employees": "Até 10",
+  "reality": "O restaurante cresce...",
+  "obstacles": "Falta de liderança da equipe, Baixa produtividade"
+}
+              </pre>
+            </details>
+
+            <details class="sheets-instructions" style="background: rgba(255,255,255,0.03); padding: 14px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05);">
+              <summary style="cursor: pointer; color: var(--gold); font-size: 13px; font-weight: 600;">Como configurar via Google Apps Script? (Clique para ver)</summary>
               <ol style="margin: 10px 0 0 16px; font-size: 12px; color: var(--text-secondary); line-height: 1.6; display: flex; flex-direction: column; gap: 6px;">
                 <li>Abra a sua planilha do Google.</li>
                 <li>Clique no menu superior em <strong>Extensões</strong> e depois em <strong>Apps Script</strong>.</li>
