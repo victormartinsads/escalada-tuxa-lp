@@ -1,6 +1,8 @@
 const express = require('express');
 const fs = require('fs');
 const path = require('path');
+const https = require('https');
+const http = require('http');
 const app = express();
 const PORT = 3000;
 const DB_PATH = path.join(__dirname, 'db.json');
@@ -14,6 +16,44 @@ app.get('/analytics', (req, res) => {
 });
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
+function postJSON(urlStr, data) {
+  return new Promise((resolve, reject) => {
+    try {
+      const url = new URL(urlStr);
+      const client = url.protocol === 'https:' ? https : http;
+      const body = JSON.stringify(data);
+      
+      const req = client.request(urlStr, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Content-Length': Buffer.byteLength(body)
+        },
+        timeout: 8000
+      }, (res) => {
+        let responseData = '';
+        res.on('data', (chunk) => { responseData += chunk; });
+        res.on('end', () => {
+          resolve({ status: res.statusCode, data: responseData });
+        });
+      });
+
+      req.on('error', (err) => {
+        reject(err);
+      });
+
+      req.on('timeout', () => {
+        req.destroy();
+        reject(new Error('Tempo limite de conexão (Timeout) excedido ao conectar ao webhook.'));
+      });
+
+      req.write(body);
+      req.end();
+    } catch (err) {
+      reject(err);
+    }
+  });
+}
 function readDB() {
   try {
     const tmpPath = path.join('/tmp', 'db.json');
@@ -99,19 +139,11 @@ app.post('/api/submit', async (req, res) => {
   const whatsappUrl = process.env.WHATSAPP_URL || db.configs.whatsappUrl || "";
 
   if (webhookUrl) {
-    try {
-      fetch(webhookUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          id: lead.id,
-          timestamp: lead.timestamp,
-          ...req.body
-        })
-      }).catch(err => console.error('Erro ao enviar para o Webhook:', err.message));
-    } catch (e) {
-      console.error('Erro na chamada fetch do Webhook:', e.message);
-    }
+    postJSON(webhookUrl, {
+      id: lead.id,
+      timestamp: lead.timestamp,
+      ...req.body
+    }).catch(err => console.error('Erro ao enviar para o Webhook:', err.message));
   }
 
   res.json({ ok: true, whatsappUrl: whatsappUrl });
@@ -133,6 +165,43 @@ app.post('/api/admin/config', (req, res) => {
   if (googleSheetsWebhookUrl !== undefined) db.configs.googleSheetsWebhookUrl = googleSheetsWebhookUrl;
   writeDB(db);
   res.json({ ok: true });
+});
+
+// ── Analytics: test webhook ───────────────────────────────────────────────────
+app.post('/api/admin/test-webhook', async (req, res) => {
+  const { webhookUrl } = req.body;
+  if (!webhookUrl) {
+    return res.status(400).json({ ok: false, error: 'URL do Webhook não fornecida.' });
+  }
+
+  const testPayload = {
+    id: Date.now(),
+    timestamp: new Date().toISOString(),
+    name: "Lead Teste (Analytics)",
+    email: "teste-webhook@tuxa.com.br",
+    whatsapp: "(41) 98416-9584",
+    role: "Proprietário(a)",
+    revenue: "Acima de R$500 mil",
+    operation_time: "Mais de 10 anos",
+    employees: "Mais de 40",
+    reality: "O restaurante cresce, mas tudo ainda depende de mim (Teste de Webhook).",
+    obstacles: "Falta de liderança da equipe, Baixa produtividade",
+    isTest: true
+  };
+
+  try {
+    const response = await postJSON(webhookUrl, testPayload);
+    res.json({
+      ok: true,
+      status: response.status,
+      data: response.data
+    });
+  } catch (err) {
+    res.json({
+      ok: false,
+      error: err.message
+    });
+  }
 });
 
 // ── Clear leads (analytics use) ───────────────────────────────────────────────

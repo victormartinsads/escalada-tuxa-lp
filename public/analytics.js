@@ -208,6 +208,46 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
+  // Test webhook
+  const testBtn = document.getElementById('btn-test-webhook');
+  const testResult = document.getElementById('webhook-test-result');
+  if (testBtn) {
+    testBtn.addEventListener('click', async () => {
+      const webhookUrl = document.getElementById('cfg-sheets-webhook').value.trim();
+      if (!webhookUrl) {
+        testResult.textContent = '❌ Insira uma URL primeiro.';
+        testResult.style.color = '#ef4444';
+        return;
+      }
+      
+      testBtn.disabled = true;
+      testBtn.textContent = '⏳ Enviando...';
+      testResult.textContent = '';
+      
+      try {
+        const res = await fetch('/api/admin/test-webhook', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ webhookUrl })
+        });
+        const data = await res.json();
+        if (data.ok) {
+          testResult.textContent = `✅ Enviado! Status do webhook: ${data.status}`;
+          testResult.style.color = '#22c55e';
+        } else {
+          testResult.textContent = `❌ Erro: ${data.error || 'Falha de conexão'}`;
+          testResult.style.color = '#ef4444';
+        }
+      } catch (err) {
+        testResult.textContent = `❌ Erro: ${err.message}`;
+        testResult.style.color = '#ef4444';
+      } finally {
+        testBtn.disabled = false;
+        testBtn.textContent = '⚡ Enviar Lead de Teste';
+      }
+    });
+  }
+
   // ── Form Builder ──────────────────────────────────────────────────────────
   function renderBuilderFields() {
     const list = document.getElementById('builder-fields-list');
