@@ -3,410 +3,259 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Painel de Controle e Analytics - Mentoria Tuxa Gonçalves</title>
-  
-  <!-- Fontes Premium -->
+  <title>Painel de Controle | Tuxa Gonçalves</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Sora:wght@600&display=swap" rel="stylesheet">
-  
-  <!-- Estilos do Analytics -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/analytics.css">
-  
-  <!-- Chart.js para gráficos premium -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body class="admin-panel">
 
-  <!-- Layout Container -->
   <div class="admin-container">
-    
-    <!-- Sidebar / Navegação -->
+
+    <!-- ── Sidebar ──────────────────────────────────────────────── -->
     <aside class="admin-sidebar">
       <div class="sidebar-brand">
-        <img src="/assets/logo-tuxa.webp" alt="Tuxa Logo" class="sidebar-logo">
+        <img src="/assets/logo-tuxa.webp" alt="Tuxa" class="sidebar-logo">
         <span class="sidebar-title">Painel Geral</span>
       </div>
       <nav class="sidebar-menu">
-        <button class="menu-item active" data-tab="dashboard">
-          <svg class="menu-icon" viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none"><rect x="3" y="3" width="7" height="9"></rect><rect x="14" y="3" width="7" height="5"></rect><rect x="14" y="12" width="7" height="9"></rect><rect x="3" y="16" width="7" height="5"></rect></svg>
-          Métricas e A/B
+        <button class="menu-item active" data-tab="dashboard" id="nav-dashboard">
+          <svg class="menu-icon" viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none"><rect x="3" y="3" width="7" height="9"></rect><rect x="14" y="3" width="7" height="5"></rect><rect x="14" y="12" width="7" height="9"></rect><rect x="3" y="16" width="7" height="5"></rect></svg>
+          Métricas
         </button>
-        <button class="menu-item" data-tab="leads">
-          <svg class="menu-icon" viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+        <button class="menu-item" data-tab="leads" id="nav-leads">
+          <svg class="menu-icon" viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
           Banco de Leads
         </button>
-        <button class="menu-item" data-tab="config">
-          <svg class="menu-icon" viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
-          Textos e A/B
+        <button class="menu-item" data-tab="config" id="nav-config">
+          <svg class="menu-icon" viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+          Editar Textos
         </button>
-        <button class="menu-item" data-tab="form-builder">
-          <svg class="menu-icon" viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+        <button class="menu-item" data-tab="form-builder" id="nav-form-builder">
+          <svg class="menu-icon" viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
           Editar Formulário
         </button>
       </nav>
       <div class="sidebar-footer">
-        <a href="/" target="_blank" class="view-site-btn">Ver Landing Page &rarr;</a>
+        <a href="/" target="_blank" class="view-site-btn">Ver Landing Page →</a>
       </div>
     </aside>
 
-    <!-- Área de Conteúdo Principal -->
+    <!-- ── Main ─────────────────────────────────────────────────── -->
     <main class="admin-main">
+
       <header class="admin-header">
         <div class="header-info">
-          <h1 id="tab-title">Estatísticas e Teste A/B</h1>
-          <p id="tab-description">Acompanhe o desempenho das suas variações e otimize suas conversões.</p>
+          <h1 id="tab-title">Métricas</h1>
+          <p id="tab-desc">Acompanhe visitas, cliques e envios do formulário.</p>
         </div>
         <div class="header-actions">
-          <button id="reset-stats-btn" class="btn btn-outline btn-danger">Zerar Métricas</button>
+          <button id="reset-stats-btn" class="btn btn-danger-outline">Zerar Métricas</button>
         </div>
       </header>
 
-      <!-- SEÇÃO 1: DASHBOARD -->
+      <!-- TAB 1: DASHBOARD ─────────────────────────────────────── -->
       <section id="tab-content-dashboard" class="tab-content active">
-        <!-- Cards de Visão Geral -->
+
         <div class="kpi-grid">
           <div class="kpi-card">
-            <span class="kpi-label">Total de Leads Capturados</span>
-            <div class="kpi-value-row">
-              <span id="kpi-total-leads" class="kpi-value">0</span>
-              <span class="kpi-badge">Geral</span>
-            </div>
-            <p class="kpi-desc">Conversões totais do formulário</p>
+            <span class="kpi-label">Visitas</span>
+            <span id="kpi-visits" class="kpi-value">0</span>
+            <p class="kpi-desc">Acessos à página</p>
           </div>
-          
           <div class="kpi-card">
-            <span class="kpi-label">Melhor Versão Atual</span>
-            <div class="kpi-value-row">
-              <span id="kpi-winner" class="kpi-value">-</span>
-              <span id="kpi-winner-rate" class="kpi-badge success">0% CR</span>
-            </div>
-            <p class="kpi-desc">Baseado na maior taxa de conversão</p>
+            <span class="kpi-label">Cliques no CTA</span>
+            <span id="kpi-clicks" class="kpi-value">0</span>
+            <p class="kpi-desc">Abriram o formulário</p>
           </div>
-          
           <div class="kpi-card">
-            <span class="kpi-label">Visitas Totais (A/B)</span>
-            <div class="kpi-value-row">
-              <span id="kpi-total-visits" class="kpi-value">0</span>
-              <span class="kpi-badge info">Visitas</span>
-            </div>
-            <p class="kpi-desc">Cliques únicos na página</p>
+            <span class="kpi-label">Leads Capturados</span>
+            <span id="kpi-submissions" class="kpi-value">0</span>
+            <p class="kpi-desc">Formulários enviados</p>
+          </div>
+          <div class="kpi-card">
+            <span class="kpi-label">Taxa de Conversão</span>
+            <span id="kpi-cr" class="kpi-value">0%</span>
+            <p class="kpi-desc">Leads / Visitas</p>
           </div>
         </div>
 
-        <!-- Bento Grid Comparativo -->
         <div class="bento-grid">
-          
-          <!-- Comparativo Visual (Visitas, Cliques, Leads) -->
           <div class="bento-card span-2">
-            <h3 class="card-title">Métricas de Funil Comparativas (A vs B)</h3>
+            <h3 class="card-title">Funil de Conversão</h3>
             <div class="chart-container">
               <canvas id="funnelChart"></canvas>
             </div>
           </div>
-
-          <!-- Taxa de Conversão e CTR -->
           <div class="bento-card">
             <h3 class="card-title">Taxas de Performance</h3>
-            <div class="rates-container">
-              
-              <!-- Versão A -->
-              <div class="rate-box">
-                <div class="rate-header">
-                  <span class="rate-version font-sora">Versão A (Original)</span>
-                  <span id="rate-a-cr" class="rate-percentage success-text">0% CR</span>
+            <div class="rates-stack">
+              <div class="rate-item">
+                <div class="rate-row">
+                  <span class="rate-label">CTR (Cliques/Visitas)</span>
+                  <span id="rate-ctr" class="rate-value">0%</span>
                 </div>
-                <div class="progress-bar-bg">
-                  <div id="progress-a-cr" class="progress-bar success-bg" style="width: 0%"></div>
-                </div>
-                <div class="rate-sub-metrics">
-                  <span>CTR do Botão: <strong id="rate-a-ctr">0%</strong></span>
-                  <span>Leads/Visitas</span>
-                </div>
+                <div class="progress-bg"><div id="bar-ctr" class="progress-fill" style="width:0%"></div></div>
               </div>
-              
-              <!-- Versão B -->
-              <div class="rate-box">
-                <div class="rate-header">
-                  <span class="rate-version font-sora">Versão B (Variação)</span>
-                  <span id="rate-b-cr" class="rate-percentage success-text">0% CR</span>
+              <div class="rate-item">
+                <div class="rate-row">
+                  <span class="rate-label">CR (Leads/Visitas)</span>
+                  <span id="rate-cr" class="rate-value">0%</span>
                 </div>
-                <div class="progress-bar-bg">
-                  <div id="progress-b-cr" class="progress-bar success-bg" style="width: 0%"></div>
-                </div>
-                <div class="rate-sub-metrics">
-                  <span>CTR do Botão: <strong id="rate-b-ctr">0%</strong></span>
-                  <span>Leads/Visitas</span>
-                </div>
+                <div class="progress-bg"><div id="bar-cr" class="progress-fill gold" style="width:0%"></div></div>
               </div>
-
+              <div class="rate-item">
+                <div class="rate-row">
+                  <span class="rate-label">Leads/Cliques</span>
+                  <span id="rate-lc" class="rate-value">0%</span>
+                </div>
+                <div class="progress-bg"><div id="bar-lc" class="progress-fill green" style="width:0%"></div></div>
+              </div>
             </div>
           </div>
-          
-          <!-- Tabela Resumo dos Resultados -->
-          <div class="bento-card span-3">
-            <h3 class="card-title">Tabela Geral de Desempenho</h3>
-            <div class="table-responsive">
-              <table class="data-table">
-                <thead>
-                  <tr>
-                    <th>Versão</th>
-                    <th>Visitas</th>
-                    <th>Cliques no CTA</th>
-                    <th>CTR (Click-Through Rate)</th>
-                    <th>Formulários Enviados (Leads)</th>
-                    <th>Taxa de Conversão (CR)</th>
-                  </tr>
-                </thead>
-                <tbody id="stats-table-body">
-                  <!-- Injetado por JS -->
-                </tbody>
-              </table>
-            </div>
-          </div>
-
         </div>
       </section>
 
-      <!-- SEÇÃO 2: BANCO DE LEADS -->
+      <!-- TAB 2: LEADS ─────────────────────────────────────────── -->
       <section id="tab-content-leads" class="tab-content">
         <div class="leads-controls">
-          <div class="search-bar-container">
-            <input type="text" id="leads-search" class="form-input" placeholder="Buscar por nome, e-mail ou dados...">
-          </div>
-          <div class="leads-actions">
-            <button id="export-leads-btn" class="btn btn-success">
-              <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-              Exportar CSV
-            </button>
-          </div>
+          <input type="text" id="leads-search" class="form-input" placeholder="Buscar por nome, e-mail...">
+          <button id="export-leads-btn" class="btn btn-success">⬇ Exportar CSV</button>
         </div>
-
         <div class="bento-card">
           <div class="table-responsive">
             <table class="data-table" id="leads-table">
               <thead>
                 <tr id="leads-table-headers">
                   <th>Data/Hora</th>
-                  <th>Versão Origem</th>
-                  <!-- Cabeçalhos dinâmicos baseados no formulário -->
                   <th>Ações</th>
                 </tr>
               </thead>
-              <tbody id="leads-table-body">
-                <!-- Injetado por JS -->
-              </tbody>
+              <tbody id="leads-table-body"></tbody>
             </table>
           </div>
-          <div id="leads-empty-state" class="empty-state">
-            <p>Nenhum lead capturado até o momento.</p>
+          <div id="leads-empty" class="empty-state" style="display:none">
+            Nenhum lead capturado ainda.
           </div>
         </div>
       </section>
 
-      <!-- SEÇÃO 3: CONFIGURAÇÕES E TEXTOS -->
+      <!-- TAB 3: EDITAR TEXTOS ─────────────────────────────────── -->
       <section id="tab-content-config" class="tab-content">
         <form id="config-form">
-          
-          <!-- Controle Geral do A/B -->
+
           <div class="bento-card">
-            <h3 class="card-title">Configurações Gerais do Sistema</h3>
-            <div class="form-row">
-              <div class="form-group span-2">
-                <label class="form-label" style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
-                  <input type="checkbox" id="ab-enabled-toggle" style="width: 20px; height: 20px;">
-                  Habilitar Sistema de Teste A/B de Conversão
-                </label>
-                <p class="input-desc">Quando habilitado, o sistema alternará automaticamente as versões A e B para os visitantes. Quando desativado, todos os usuários visualizarão a Versão A.</p>
-              </div>
-              <div class="form-group span-2">
-                <label class="form-label" for="global-whatsapp-url">Link Global de Redirecionamento (WhatsApp)</label>
-                <input type="text" id="global-whatsapp-url" class="form-input" placeholder="https://api.whatsapp.com/send/?phone=5541984169584...">
-                <p class="input-desc">Use placeholders como `{name}` ou `{whatsapp}` para injetar dados do formulário no texto. Exemplo: `https://wa.me/5541984169584?text=Olá%20{name}`</p>
-              </div>
+            <h3 class="card-title">Link do WhatsApp (Redirecionamento)</h3>
+            <div class="form-group">
+              <label class="form-label" for="cfg-whatsapp">URL de Redirecionamento</label>
+              <input type="text" id="cfg-whatsapp" class="form-input" placeholder="https://api.whatsapp.com/send/?phone=55...">
+              <p class="input-desc">Use <code>{name}</code>, <code>{whatsapp}</code>, <code>{email}</code> para injetar dados do lead na mensagem.</p>
             </div>
           </div>
 
-          <!-- Abas para as Versões A e B -->
-          <div class="versions-tabs">
-            <button type="button" class="version-tab-btn active" data-version-edit="A">Editar Versão A (Original)</button>
-            <button type="button" class="version-tab-btn" data-version-edit="B">Editar Versão B (Variação)</button>
-          </div>
+          <div class="bento-card" style="margin-top:20px">
+            <h3 class="card-title">Textos da Página</h3>
+            <div class="form-grid">
 
-          <!-- Campos de Edição da Versão A -->
-          <div id="version-edit-container-A" class="version-edit-container active">
-            <div class="bento-card">
-              <h3 class="card-title">Textos e Estilos da Versão A</h3>
-              <div class="form-grid">
-                
-                <div class="form-group span-2">
-                  <label class="form-label" for="ver-a-name">Nome de Controle da Versão</label>
-                  <input type="text" id="ver-a-name" class="form-input">
-                </div>
-
-                <div class="form-group span-2">
-                  <label class="form-label" for="ver-a-pill">Texto do Pill Badge (Pequeno selo superior)</label>
-                  <input type="text" id="ver-a-pill" class="form-input">
-                </div>
-
-                <div class="form-group span-4">
-                  <label class="form-label" for="ver-a-headline">Headline Principal (Aceita tags HTML como &lt;span class="destaque"&gt; para negrito dourado)</label>
-                  <textarea id="ver-a-headline" class="form-input" rows="3"></textarea>
-                </div>
-
-                <div class="form-group span-4">
-                  <label class="form-label" for="ver-a-subheadline">Subheadline (Texto secundário descritivo)</label>
-                  <textarea id="ver-a-subheadline" class="form-input" rows="4"></textarea>
-                </div>
-
-                <div class="form-group span-2">
-                  <label class="form-label" for="ver-a-btnText">Texto do Botão CTA</label>
-                  <input type="text" id="ver-a-btnText" class="form-input">
-                </div>
-
-                <div class="form-group">
-                  <label class="form-label" for="ver-a-btnColor">Cor de Fundo do Botão (Hex ou Gradiente)</label>
-                  <input type="text" id="ver-a-btnColor" class="form-input" placeholder="#E6C65A ou linear-gradient(...)">
-                </div>
-
-                <div class="form-group">
-                  <label class="form-label" for="ver-a-btnTextColor">Cor do Texto do Botão</label>
-                  <input type="text" id="ver-a-btnTextColor" class="form-input" placeholder="#0A0A0A">
-                </div>
-
-                <div class="form-group span-4">
-                  <label class="form-label" for="ver-a-whatsappUrl">Link Específico do WhatsApp (Opcional - deixa em branco para usar o Global)</label>
-                  <input type="text" id="ver-a-whatsappUrl" class="form-input">
-                </div>
-
+              <div class="form-group span-2">
+                <label class="form-label" for="cfg-pill">Pill Badge (texto do selo superior)</label>
+                <input type="text" id="cfg-pill" class="form-input">
               </div>
-            </div>
-          </div>
 
-          <!-- Campos de Edição da Versão B -->
-          <div id="version-edit-container-B" class="version-edit-container">
-            <div class="bento-card">
-              <h3 class="card-title">Textos e Estilos da Versão B</h3>
-              <div class="form-grid">
-                
-                <div class="form-group span-2">
-                  <label class="form-label" for="ver-b-name">Nome de Controle da Versão</label>
-                  <input type="text" id="ver-b-name" class="form-input">
-                </div>
-
-                <div class="form-group span-2">
-                  <label class="form-label" for="ver-b-pill">Texto do Pill Badge (Pequeno selo superior)</label>
-                  <input type="text" id="ver-b-pill" class="form-input">
-                </div>
-
-                <div class="form-group span-4">
-                  <label class="form-label" for="ver-b-headline">Headline Principal (Aceita tags HTML como &lt;span class="destaque"&gt; para negrito dourado)</label>
-                  <textarea id="ver-b-headline" class="form-input" rows="3"></textarea>
-                </div>
-
-                <div class="form-group span-4">
-                  <label class="form-label" for="ver-b-subheadline">Subheadline (Texto secundário descritivo)</label>
-                  <textarea id="ver-b-subheadline" class="form-input" rows="4"></textarea>
-                </div>
-
-                <div class="form-group span-2">
-                  <label class="form-label" for="ver-b-btnText">Texto do Botão CTA</label>
-                  <input type="text" id="ver-b-btnText" class="form-input">
-                </div>
-
-                <div class="form-group">
-                  <label class="form-label" for="ver-b-btnColor">Cor de Fundo do Botão (Hex ou Gradiente)</label>
-                  <input type="text" id="ver-b-btnColor" class="form-input" placeholder="#ffffff">
-                </div>
-
-                <div class="form-group">
-                  <label class="form-label" for="ver-b-btnTextColor">Cor do Texto do Botão</label>
-                  <input type="text" id="ver-b-btnTextColor" class="form-input" placeholder="#0A0A0A">
-                </div>
-
-                <div class="form-group span-4">
-                  <label class="form-label" for="ver-b-whatsappUrl">Link Específico do WhatsApp (Opcional - deixa em branco para usar o Global)</label>
-                  <input type="text" id="ver-b-whatsappUrl" class="form-input">
-                </div>
-
+              <div class="form-group span-4">
+                <label class="form-label" for="cfg-headline">Headline principal <small>(aceita <code>&lt;span class="destaque"&gt;</code> para texto dourado)</small></label>
+                <textarea id="cfg-headline" class="form-input" rows="3"></textarea>
               </div>
+
+              <div class="form-group span-4">
+                <label class="form-label" for="cfg-subheadline">Subheadline</label>
+                <textarea id="cfg-subheadline" class="form-input" rows="5"></textarea>
+              </div>
+
+              <div class="form-group span-2">
+                <label class="form-label" for="cfg-btn-text">Texto do Botão CTA</label>
+                <input type="text" id="cfg-btn-text" class="form-input">
+              </div>
+
+              <div class="form-group span-4">
+                <label class="form-label" for="cfg-btn-subtext">Subtexto abaixo do botão (uma linha por item)</label>
+                <textarea id="cfg-btn-subtext" class="form-input" rows="5"></textarea>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="cfg-btn-color">Cor/Gradiente do Botão</label>
+                <input type="text" id="cfg-btn-color" class="form-input" placeholder="linear-gradient(...)">
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="cfg-btn-text-color">Cor do Texto do Botão</label>
+                <input type="text" id="cfg-btn-text-color" class="form-input" placeholder="#0A0A0A">
+              </div>
+
             </div>
           </div>
 
           <div class="form-submit-row">
-            <button type="submit" class="btn btn-primary btn-large">Salvar Configurações Globais e A/B</button>
+            <button type="submit" class="btn btn-primary btn-large">Salvar Configurações</button>
           </div>
         </form>
       </section>
 
-      <!-- SEÇÃO 4: CONSTRUTOR DE FORMULÁRIO -->
+      <!-- TAB 4: EDITAR FORMULÁRIO ─────────────────────────────── -->
       <section id="tab-content-form-builder" class="tab-content">
         <div class="form-builder-layout">
-          
-          <!-- Lista de campos ativos -->
+
           <div class="bento-card">
-            <h3 class="card-title">Campos do Formulário de Captura</h3>
-            <p class="card-subtitle">Estes campos aparecerão no modal de captura de leads da landing page.</p>
-            
-            <div class="fields-list" id="builder-fields-list">
-              <!-- Injetado via JS -->
-            </div>
-            
-            <div class="form-submit-row" style="margin-top: 24px;">
-              <button id="save-form-fields-btn" class="btn btn-primary">Salvar Estrutura do Formulário</button>
+            <h3 class="card-title">Campos do Formulário</h3>
+            <p class="card-subtitle">Estes campos aparecerão no modal de captura da landing page.</p>
+            <div class="fields-list" id="builder-fields-list"></div>
+            <div class="form-submit-row" style="margin-top:20px">
+              <button id="save-form-fields-btn" class="btn btn-primary">Salvar Formulário</button>
             </div>
           </div>
 
-          <!-- Painel de Adição de novo campo -->
           <div class="bento-card">
             <h3 class="card-title">Adicionar Novo Campo</h3>
             <form id="add-field-form" class="add-field-form">
               <div class="form-group">
-                <label class="form-label" for="new-field-label">Etiqueta do Campo (Label)</label>
+                <label class="form-label" for="new-field-label">Label do Campo</label>
                 <input type="text" id="new-field-label" class="form-input" placeholder="Ex: Nome da Empresa" required>
               </div>
-
               <div class="form-group">
-                <label class="form-label" for="new-field-id">ID Único do Campo (Apenas letras sem espaço/acentos)</label>
+                <label class="form-label" for="new-field-id">ID Único (sem espaços/acentos)</label>
                 <input type="text" id="new-field-id" class="form-input" placeholder="Ex: nome_empresa" required>
-                <p class="input-desc">Este ID será usado no banco de dados e poderá ser usado no link do WhatsApp como `{nome_empresa}`.</p>
+                <p class="input-desc">Pode ser usado no link do WhatsApp como <code>{nome_empresa}</code>.</p>
               </div>
-
               <div class="form-group">
                 <label class="form-label" for="new-field-type">Tipo do Campo</label>
                 <select id="new-field-type" class="form-input">
-                  <option value="text">Texto Simples</option>
+                  <option value="text">Texto</option>
                   <option value="email">E-mail</option>
-                  <option value="tel">Telefone / WhatsApp</option>
+                  <option value="tel">Telefone</option>
                   <option value="number">Número</option>
                   <option value="radio">Escolha Única (Radio)</option>
-                  <option value="checkbox">Escolha Múltipla (Checkbox)</option>
+                  <option value="checkbox">Múltipla Escolha (Checkbox)</option>
                 </select>
               </div>
-
-              <!-- Grupo de Opções para Radio e Checkbox -->
-              <div class="form-group" id="new-field-options-group" style="display: none;">
-                <label class="form-label" for="new-field-options">Opções do Campo (Uma por linha)</label>
-                <textarea id="new-field-options" class="form-input" rows="4" placeholder="Opção 1&#10;Opção 2&#10;Opção 3"></textarea>
+              <div class="form-group" id="new-field-options-group" style="display:none">
+                <label class="form-label" for="new-field-options">Opções (uma por linha)</label>
+                <textarea id="new-field-options" class="form-input" rows="4" placeholder="Opção 1&#10;Opção 2"></textarea>
               </div>
-
-              <!-- Grupo de Limite de Seleção para Checkbox -->
-              <div class="form-group" id="new-field-max-group" style="display: none;">
-                <label class="form-label" for="new-field-max">Limite de Seleção Máxima</label>
+              <div class="form-group" id="new-field-max-group" style="display:none">
+                <label class="form-label" for="new-field-max">Limite máximo de seleção</label>
                 <input type="number" id="new-field-max" class="form-input" min="1" value="2">
               </div>
-
               <div class="form-group">
-                <label class="form-label" for="new-field-placeholder">Texto de Exemplo (Placeholder)</label>
-                <input type="text" id="new-field-placeholder" class="form-input" placeholder="Ex: Digite o nome da sua empresa">
+                <label class="form-label" for="new-field-placeholder">Placeholder (opcional)</label>
+                <input type="text" id="new-field-placeholder" class="form-input">
               </div>
-
-              <div class="form-group" style="flex-direction: row; align-items: center; gap: 10px;">
-                <input type="checkbox" id="new-field-required" style="width: 18px; height: 18px;">
-                <label class="form-label" for="new-field-required" style="margin: 0; cursor: pointer;">Campo Obrigatório</label>
+              <div class="form-group" style="flex-direction:row;align-items:center;gap:10px">
+                <input type="checkbox" id="new-field-required" style="width:18px;height:18px">
+                <label class="form-label" for="new-field-required" style="margin:0;cursor:pointer">Campo obrigatório</label>
               </div>
-
-              <button type="submit" class="btn btn-success" style="width: 100%; margin-top: 10px;">Adicionar ao Formulário</button>
+              <button type="submit" class="btn btn-success" style="width:100%;margin-top:12px">Adicionar Campo</button>
             </form>
           </div>
 

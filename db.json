@@ -1,7 +1,6 @@
 {
   "configs": {
-    "abEnabled": true,
-    "whatsappUrl": "https://api.whatsapp.com/send/?phone=5541984169584&text=Ol%C3%A1%2C%20sou%20{name}.%20Preenchi%20os%20dados%20da%20sess%C3%A3o%20estrat%C3%A9gica.%20Meu%20papel%20%C3%A9%20{role}%20e%20nossa%20maior%20dor%20hoje%20%C3%A9%3A%20{reality}",
+    "whatsappUrl": "https://api.whatsapp.com/send/?phone=5541984169584&text=Ol%C3%A1%2C%20sou%20{name}.%20Quero%20aplicar%20para%20a%20Sess%C3%A3o%20Estrat%C3%A9gica%20Gratuita.",
     "fields": [
       {
         "id": "name",
@@ -154,40 +153,20 @@
         ]
       }
     ],
-    "versions": {
-      "A": {
-        "name": "Versão A (Original)",
-        "pill": "Referência em CURITIBA - PR",
-        "headline": "Se você tirar <span class=\"destaque\">15 dias de férias</span>, seu negócio sobrevive?",
-        "subheadline": "Descubra os padrões invisíveis que mantêm empresários de restaurantes, padarias e cafeterias PRESOS na operação mesmo depois de anos de experiência. Chega de contratar mais pessoas, você precisa desenvolver líderes.",
-        "btnText": "Quero sair do operacional",
-        "btnColor": "linear-gradient(135deg, #F7DC8A 0%, #E6C65A 50%, #C99A2E 100%)",
-        "btnTextColor": "#0A0A0A",
-        "whatsappUrl": ""
-      },
-      "B": {
-        "name": "Versão B (Dor de Cabeça na Operação)",
-        "pill": "Mudar de Vida e Focar na Estratégia",
-        "headline": "Seu restaurante funciona sem você ou você é <span class=\"destaque\">escravo dele?</span>",
-        "subheadline": "Aprenda a estruturar processos claros e treinar líderes de confiança para gerenciar seu estabelecimento gastronômico enquanto você foca na expansão ou tira férias tranquilamente.",
-        "btnText": "Quero Liberdade Operacional",
-        "btnColor": "#FFFFFF",
-        "btnTextColor": "#0A0A0A",
-        "whatsappUrl": ""
-      }
+    "page": {
+      "pill": "Referência em CURITIBA - PR",
+      "headline": "Faça uma reunião para descobrir o principal <span class=\"destaque\">GARGALO</span> que trava a autonomia do seu restaurante que já fatura acima de 50 mil/mês.",
+      "subheadline": "Com 25 anos na Área, Tuxa Gonçalves está selecionando 15 empresários da gastronomia que já faturam acima de 50 mil para participar de uma Sessão Estratégica individual, onde serão identificados os principais gargalos que estão limitando o crescimento, a gestão e a lucratividade do restaurante.\n\nComo essa análise é personalizada, cada aplicação passa por uma avaliação antes do agendamento.",
+      "btnText": "Quero aplicar para a Sessão Estratégica Gratuita com a Tuxa",
+      "btnSubtext": "✔ Sessão individual\n✔ Aproximadamente 30 minutos\n✔ 100% online e gratuito\n✔ Aplicação sujeita à aprovação",
+      "btnColor": "linear-gradient(135deg, #F7DC8A 0%, #E6C65A 50%, #C99A2E 100%)",
+      "btnTextColor": "#0A0A0A"
     }
   },
   "stats": {
-    "A": {
-      "visits": 0,
-      "clicks": 0,
-      "submissions": 0
-    },
-    "B": {
-      "visits": 0,
-      "clicks": 0,
-      "submissions": 0
-    }
+    "visits": 0,
+    "clicks": 0,
+    "submissions": 0
   },
   "leads": []
 }

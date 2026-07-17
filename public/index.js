@@ -1,466 +1,334 @@
-document.addEventListener('DOMContentLoaded', () => {
-  const ctaButton = document.getElementById('cta-button');
-  const leadModal = document.getElementById('lead-modal');
-  const modalClose = document.getElementById('modal-close');
-  const leadForm = document.getElementById('lead-form');
-  const stepsContainer = document.getElementById('steps-container');
-  const prevBtn = document.getElementById('prev-step-btn');
-  const nextBtn = document.getElementById('next-step-btn');
-  const submitBtn = document.getElementById('submit-btn');
-  
-  const stepIndicator = document.getElementById('modal-step-indicator');
-  const percentIndicator = document.getElementById('modal-percent-indicator');
-  const progressBarFill = document.getElementById('modal-progress-bar-fill');
+document.addEventListener('DOMContentLoaded', async () => {
+  // ── DOM refs ──────────────────────────────────────────────────────────────
+  const ctaBtn        = document.getElementById('hero-cta');
+  const backdrop      = document.getElementById('modal-backdrop');
+  const stepsWrap     = document.getElementById('modal-steps');
+  const progressBar   = document.getElementById('modal-progress-bar');
+  const btnBack       = document.getElementById('btn-back');
+  const btnNext       = document.getElementById('btn-next');
+  const pillText      = document.getElementById('pill-text');
+  const headline      = document.getElementById('hero-headline');
+  const subheadline   = document.getElementById('hero-subheadline');
+  const btnSubtext    = document.getElementById('hero-btn-subtext');
 
-  const activeVersion = document.body.getAttribute('data-version') || 'A';
-  
-  let formFields = [];
-  let steps = []; // Array que armazena os grupos de campos por etapa
-  let activeStepIndex = 0;
-  const leadAnswers = {};
+  // ── State ─────────────────────────────────────────────────────────────────
+  let formFields    = [];
+  let steps         = [];
+  let currentStep   = 0;
+  let leadAnswers   = {};
+  let whatsappUrl   = '';
 
-  // 1. Carrega campos e configura as etapas do formulário
-  async function loadFormConfig() {
+  // ── Track visit ───────────────────────────────────────────────────────────
+  fetch('/api/visit', { method: 'POST' }).catch(() => {});
+
+  // ── Load config from server ───────────────────────────────────────────────
+  async function loadConfig() {
     try {
-      const response = await fetch('/api/admin/stats');
-      if (!response.ok) throw new Error('Falha ao obter dados.');
-      const data = await response.json();
-      formFields = data.configs.fields || [];
-      
-      buildFormSteps();
+      const res  = await fetch('/api/config');
+      const data = await res.json();
+      const page = data.page || {};
+
+      // Apply texts
+      if (page.pill)        pillText.textContent  = page.pill;
+      if (page.headline)    headline.innerHTML    = page.headline;
+      if (page.subheadline) subheadline.textContent = page.subheadline;
+      if (page.btnText)     ctaBtn.textContent    = page.btnText;
+      if (page.btnSubtext) {
+        const lines = page.btnSubtext.split('\n').filter(Boolean);
+        btnSubtext.innerHTML = lines.map(l => `<span>${l}</span>`).join('');
+      }
+      if (page.btnColor)     ctaBtn.style.background = page.btnColor;
+      if (page.btnTextColor) ctaBtn.style.color       = page.btnTextColor;
+
+      formFields  = data.fields  || [];
+      whatsappUrl = data.whatsappUrl || '';
+
+      buildSteps();
     } catch (err) {
-      console.error('Erro de requisição:', err);
-      // Fallback em caso de erro
-      formFields = [
-        { id: 'name', label: 'Nome Completo', type: 'text', required: true, placeholder: 'Digite seu nome completo' },
-        { id: 'email', label: 'E-mail Profissional', type: 'email', required: true, placeholder: 'Digite seu melhor e-mail' },
-        { id: 'whatsapp', label: 'WhatsApp', type: 'tel', required: true, placeholder: '(00) 00000-0000' }
-      ];
-      buildFormSteps();
+      console.error('Erro ao carregar config:', err);
     }
   }
 
-  // Divide os campos dinâmicos em etapas (Etapa 0 = Contatos, Etapas seguintes = Perguntas com opções)
-  function buildFormSteps() {
+  // ── Build steps ───────────────────────────────────────────────────────────
+  function buildSteps() {
     steps = [];
-    
-    // Filtra campos de contato (sem opções como radio ou checkbox)
+
     const contactFields = formFields.filter(f => !f.options || f.options.length === 0);
-    
-    // Se houver campos de contato, agrupa-os no Passo 0
+    const questionFields = formFields.filter(f => f.options && f.options.length > 0);
+
     if (contactFields.length > 0) {
-      steps.push({
-        type: 'contact',
-        title: 'Vamos começar!',
-        subtitle: 'Preencha seus dados de contato para iniciarmos a sessão estratégica.',
-        fields: contactFields
-      });
+      steps.push({ type: 'contact', fields: contactFields });
     }
 
-    // Cada campo de múltipla escolha (com opções) vira uma etapa individual
-    const questionFields = formFields.filter(f => f.options && f.options.length > 0);
-    questionFields.forEach((field, index) => {
-      steps.push({
-        type: 'question',
-        field: field
-      });
+    questionFields.forEach(field => {
+      steps.push({ type: 'question', field });
     });
 
     renderSteps();
-    showStep(0);
+    goTo(0);
   }
 
-  // Renderiza todo o HTML das etapas no container
+  // ── Render all steps into DOM ─────────────────────────────────────────────
   function renderSteps() {
-    stepsContainer.innerHTML = '';
+    stepsWrap.innerHTML = '';
 
-    steps.forEach((step, stepIndex) => {
-      const stepDiv = document.createElement('div');
-      stepDiv.className = `form-step step-${stepIndex}`;
-      stepDiv.setAttribute('data-step-index', stepIndex);
+    steps.forEach((step, idx) => {
+      const div = document.createElement('div');
+      div.className = 'modal-step';
+      div.id = `step-${idx}`;
 
       if (step.type === 'contact') {
-        // Renderiza etapa de contatos
-        stepDiv.innerHTML = `
-          <h3 class="step-title">${step.title}</h3>
-          <p class="step-desc">${step.subtitle}</p>
-          <div class="form-group-list"></div>
+        div.innerHTML = `
+          <p class="step__title">Vamos começar!</p>
+          <p class="step__desc">Preencha seus dados de contato para iniciarmos.</p>
+          <div class="step__fields" id="contact-fields"></div>
         `;
-        
-        const list = stepDiv.querySelector('.form-group-list');
+        const fieldsWrap = div.querySelector('#contact-fields');
         step.fields.forEach(field => {
-          const group = document.createElement('div');
-          group.className = 'form-group';
-          
-          const label = document.createElement('label');
-          label.className = 'form-label';
-          label.setAttribute('for', field.id);
-          label.textContent = field.label;
-          
-          const input = document.createElement('input');
-          input.className = 'form-input';
-          input.id = field.id;
-          input.name = field.id;
-          input.type = field.type;
-          input.required = !!field.required;
-          input.placeholder = field.placeholder || '';
-          
-          // Evento de alteração para salvar no estado local
-          input.addEventListener('input', (e) => {
+          const grp = document.createElement('div');
+          grp.className = 'field-group';
+          grp.innerHTML = `
+            <label class="field-label" for="${field.id}">${field.label}</label>
+            <input class="field-input" id="${field.id}" name="${field.id}" type="${field.type}"
+              placeholder="${field.placeholder || ''}" ${field.required ? 'required' : ''}>
+          `;
+          const input = grp.querySelector('input');
+          input.addEventListener('input', e => {
             leadAnswers[field.id] = e.target.value;
-            validateCurrentStep();
+            if (field.type === 'tel') maskPhone(input);
+            refreshNav();
           });
-
-          // Adiciona máscara se for telefone
-          if (field.type === 'tel' || field.id.toLowerCase().includes('whatsapp') || field.id.toLowerCase().includes('telefone')) {
-            input.addEventListener('input', (e) => maskPhone(e.target));
-          }
-
-          group.appendChild(label);
-          group.appendChild(input);
-          list.appendChild(group);
+          fieldsWrap.appendChild(grp);
         });
-
       } else {
-        // Renderiza etapa de pergunta múltipla escolha (Respondi)
         const field = step.field;
-        const isMultiSelect = field.type === 'checkbox';
-        const maxSelect = field.maxSelect || 999;
-        
-        stepDiv.innerHTML = `
-          <h3 class="step-title">${field.label}</h3>
-          <p class="step-desc">${isMultiSelect ? `Escolha até ${maxSelect} opções abaixo.` : 'Selecione uma das opções abaixo.'}</p>
-          <div class="options-grid"></div>
-        `;
+        const isCheckbox = field.type === 'checkbox';
+        const max = field.maxSelect || 999;
 
-        const grid = stepDiv.querySelector('.options-grid');
+        div.innerHTML = `
+          <p class="step__title">${field.label}</p>
+          <p class="step__desc">${isCheckbox ? `Escolha até ${max} opções.` : 'Selecione uma opção.'}</p>
+          <div class="options-list" id="opts-${idx}"></div>
+        `;
+        const list = div.querySelector(`#opts-${idx}`);
         field.options.forEach(opt => {
           const card = document.createElement('div');
           card.className = 'option-card';
-          
-          // Estrutura visual da opção (círculo para radio, quadrado para checkbox)
-          const indicator = document.createElement('div');
-          indicator.className = isMultiSelect ? 'option-square' : 'option-circle';
-          
-          const labelSpan = document.createElement('span');
-          labelSpan.className = 'option-label-text';
-          labelSpan.textContent = opt;
-
-          card.appendChild(indicator);
-          card.appendChild(labelSpan);
-          
-          // Evento de clique no cartão de opção
+          card.innerHTML = `
+            <div class="option-marker ${isCheckbox ? 'square' : ''}"></div>
+            <span class="option-text">${opt}</span>
+          `;
           card.addEventListener('click', () => {
-            if (isMultiSelect) {
-              handleCheckboxClick(card, field, opt);
-            } else {
-              handleRadioClick(card, field, opt);
-            }
+            if (isCheckbox) onCheckbox(card, field, opt, list, max);
+            else             onRadio(card, field, opt, list, idx);
           });
-
-          grid.appendChild(card);
+          list.appendChild(card);
         });
       }
 
-      stepsContainer.appendChild(stepDiv);
+      stepsWrap.appendChild(div);
     });
   }
 
-  // Manipula clique em múltipla escolha simples (Radio) -> AUTO AVANÇO
-  function handleRadioClick(card, field, val) {
-    const parent = card.parentElement;
-    parent.querySelectorAll('.option-card').forEach(c => c.classList.remove('selected'));
-    
+  function onRadio(card, field, val, list, stepIdx) {
+    list.querySelectorAll('.option-card').forEach(c => c.classList.remove('selected'));
     card.classList.add('selected');
     leadAnswers[field.id] = val;
-    
-    validateCurrentStep();
-
-    // Aguarda um pequeno delay de 350ms para feedback visual antes do auto-avanço
+    refreshNav();
+    // auto-advance after brief delay
     setTimeout(() => {
-      if (activeStepIndex === steps.length - 1) {
-        // Se for a última etapa, foca no envio
-        showSubmitButtonOnly();
-      } else {
-        goToStep(activeStepIndex + 1);
-      }
-    }, 320);
+      if (currentStep < steps.length - 1) goTo(currentStep + 1);
+      else showSubmit();
+    }, 300);
   }
 
-  // Manipula clique em múltipla escolha múltipla (Checkbox)
-  function handleCheckboxClick(card, field, val) {
-    const maxSelect = field.maxSelect || 999;
-    let selectedList = leadAnswers[field.id] || [];
-    
+  function onCheckbox(card, field, val, list, max) {
+    const selected = leadAnswers[field.id] || [];
     if (card.classList.contains('selected')) {
       card.classList.remove('selected');
-      selectedList = selectedList.filter(item => item !== val);
+      leadAnswers[field.id] = selected.filter(v => v !== val);
     } else {
-      // Valida limite máximo de escolhas
-      if (selectedList.length >= maxSelect) {
-        alert(`Você pode selecionar no máximo ${maxSelect} opções nesta pergunta.`);
+      if (selected.length >= max) {
+        alert(`Selecione no máximo ${max} opções.`);
         return;
       }
       card.classList.add('selected');
-      selectedList.push(optNormalized(val));
+      leadAnswers[field.id] = [...selected, val];
     }
-    
-    // Normaliza para string ou array
-    leadAnswers[field.id] = selectedList;
-    validateCurrentStep();
+    refreshNav();
   }
 
-  // Retorna string limpa
-  function optNormalized(val) {
-    return val;
-  }
+  // ── Navigation ────────────────────────────────────────────────────────────
+  function goTo(idx) {
+    document.querySelectorAll('.modal-step').forEach(s => s.classList.remove('active'));
+    const target = document.getElementById(`step-${idx}`);
+    if (target) target.classList.add('active');
+    currentStep = idx;
 
-  // Exibe a etapa correspondente
-  function showStep(index) {
-    activeStepIndex = index;
-    
-    const allSteps = document.querySelectorAll('.form-step');
-    allSteps.forEach(s => s.classList.remove('active'));
-    
-    const targetStep = document.querySelector(`.form-step.step-${index}`);
-    if (targetStep) targetStep.classList.add('active');
-
-    // Restaura valores já preenchidos ao voltar/avançar
-    restoreStepValues(index);
-
-    // Atualiza Progresso e Navegação
+    restoreValues(idx);
     updateProgress();
-    validateCurrentStep();
+    refreshNav();
   }
 
-  function restoreStepValues(index) {
-    const step = steps[index];
+  function restoreValues(idx) {
+    const step = steps[idx];
     if (!step) return;
-
-    const stepDiv = document.querySelector(`.form-step.step-${index}`);
-    if (!stepDiv) return;
+    const div = document.getElementById(`step-${idx}`);
+    if (!div) return;
 
     if (step.type === 'contact') {
-      step.fields.forEach(field => {
-        const input = stepDiv.querySelector(`#${field.id}`);
-        if (input && leadAnswers[field.id]) {
-          input.value = leadAnswers[field.id];
-        }
+      step.fields.forEach(f => {
+        const inp = div.querySelector(`#${f.id}`);
+        if (inp && leadAnswers[f.id]) inp.value = leadAnswers[f.id];
       });
     } else {
       const field = step.field;
-      const val = leadAnswers[field.id];
+      const val   = leadAnswers[field.id];
       if (!val) return;
-
-      const isMulti = field.type === 'checkbox';
-      const cards = stepDiv.querySelectorAll('.option-card');
-      
-      cards.forEach(card => {
-        const text = card.querySelector('.option-label-text').textContent;
-        if (isMulti) {
-          if (Array.isArray(val) && val.includes(text)) {
-            card.classList.add('selected');
-          }
-        } else {
-          if (val === text) {
-            card.classList.add('selected');
-          }
-        }
+      div.querySelectorAll('.option-card').forEach(card => {
+        const txt = card.querySelector('.option-text').textContent;
+        if (Array.isArray(val) ? val.includes(txt) : val === txt)
+          card.classList.add('selected');
       });
     }
   }
 
-  // Avança de etapa
-  function goToStep(index) {
-    if (index >= 0 && index < steps.length) {
-      showStep(index);
-    }
+  function updateProgress() {
+    const pct = steps.length > 1
+      ? Math.round((currentStep / (steps.length - 1)) * 100)
+      : 0;
+    progressBar.style.width = `${pct}%`;
   }
 
-  // Valida e ativa/desativa os botões de controle
-  function validateCurrentStep() {
-    const step = steps[activeStepIndex];
-    let isValid = true;
-
-    if (!step) return;
+  function isStepValid(idx) {
+    const step = steps[idx];
+    if (!step) return false;
 
     if (step.type === 'contact') {
-      // Valida se todos os campos obrigatórios de contato estão preenchidos
-      isValid = step.fields.every(field => {
-        if (!field.required) return true;
-        const val = leadAnswers[field.id] || '';
-        if (field.type === 'email') {
-          return /\S+@\S+\.\S+/.test(val);
-        }
-        return val.trim().length > 0;
+      return step.fields.every(f => {
+        if (!f.required) return true;
+        const v = leadAnswers[f.id] || '';
+        if (f.type === 'email') return /\S+@\S+\.\S+/.test(v);
+        return v.trim().length > 0;
       });
     } else {
-      // Valida perguntas de múltipla escolha
-      const field = step.field;
-      if (field.required) {
-        const val = leadAnswers[field.id];
-        if (field.type === 'checkbox') {
-          isValid = Array.isArray(val) && val.length > 0;
-        } else {
-          isValid = !!val;
-        }
-      }
+      const v = leadAnswers[step.field.id];
+      if (step.field.type === 'checkbox') return Array.isArray(v) && v.length > 0;
+      return !!v;
     }
+  }
 
-    // Configura botões de controle
-    prevBtn.style.display = activeStepIndex > 0 ? 'block' : 'none';
-    
-    const isLastStep = activeStepIndex === steps.length - 1;
-    
-    if (isLastStep) {
-      nextBtn.style.display = 'none';
-      submitBtn.style.display = 'block';
-      submitBtn.disabled = !isValid;
+  function showSubmit() {
+    btnBack.style.display   = currentStep > 0 ? 'flex' : 'none';
+    btnNext.style.display   = 'none';
+    // replace next with submit
+    let submitBtn = document.getElementById('btn-submit');
+    if (!submitBtn) {
+      submitBtn = document.createElement('button');
+      submitBtn.id = 'btn-submit';
+      submitBtn.className = 'modal__btn modal__btn--submit';
+      submitBtn.textContent = 'Enviar e Agendar →';
+      document.getElementById('modal-footer').appendChild(submitBtn);
+      submitBtn.addEventListener('click', handleSubmit);
+    }
+    submitBtn.style.display = 'flex';
+    submitBtn.disabled = !isStepValid(currentStep);
+  }
+
+  function refreshNav() {
+    const isLast  = currentStep === steps.length - 1;
+    const valid   = isStepValid(currentStep);
+    const step    = steps[currentStep];
+    const isRadio = step && step.type === 'question' && step.field.type === 'radio';
+
+    btnBack.style.display = currentStep > 0 ? 'flex' : 'none';
+
+    const submitBtn = document.getElementById('btn-submit');
+    if (submitBtn) submitBtn.style.display = 'none';
+
+    if (isLast) {
+      btnNext.style.display  = 'none';
+      showSubmit();
     } else {
-      submitBtn.style.display = 'none';
-      
-      // Se for pergunta de auto-avanço (radio), esconde botão "Avançar" para manter o visual Respondi,
-      // a menos que o usuário já tenha respondido anteriormente e queira apenas pular.
-      const isRadio = step.type === 'question' && step.field.type === 'radio';
+      // for radio questions, hide "Avançar" until answered (auto-advance handles it)
+      // but show it if they already answered (for back-navigation convenience)
       if (isRadio) {
-        nextBtn.style.display = leadAnswers[step.field.id] ? 'block' : 'none';
+        btnNext.style.display = valid ? 'flex' : 'none';
       } else {
-        nextBtn.style.display = 'block';
+        btnNext.style.display = 'flex';
       }
-      
-      nextBtn.disabled = !isValid;
+      btnNext.disabled = !valid;
     }
   }
 
-  function showSubmitButtonOnly() {
-    prevBtn.style.display = 'block';
-    nextBtn.style.display = 'none';
-    submitBtn.style.display = 'block';
-    submitBtn.disabled = false;
-  }
+  btnBack.addEventListener('click', () => { if (currentStep > 0) goTo(currentStep - 1); });
+  btnNext.addEventListener('click', () => { if (currentStep < steps.length - 1) goTo(currentStep + 1); });
 
-  // Atualiza a barra de progresso dourada
-  function updateProgress() {
-    const totalSteps = steps.length;
-    const progressPercent = totalSteps > 0 ? Math.round((activeStepIndex / totalSteps) * 100) : 0;
-    
-    percentIndicator.textContent = `${progressPercent}% concluído`;
-    progressBarFill.style.width = `${progressPercent}%`;
-
-    if (activeStepIndex === 0) {
-      stepIndicator.textContent = 'Identificação';
-    } else {
-      stepIndicator.textContent = `Pergunta ${activeStepIndex} de ${totalSteps - 1}`;
+  // ── Submit ────────────────────────────────────────────────────────────────
+  async function handleSubmit() {
+    const submitBtn = document.getElementById('btn-submit');
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Enviando…';
     }
-  }
+    progressBar.style.width = '100%';
 
-  // Evento dos Botões de Navegação
-  prevBtn.addEventListener('click', () => {
-    goToStep(activeStepIndex - 1);
-  });
-
-  nextBtn.addEventListener('click', () => {
-    goToStep(activeStepIndex + 1);
-  });
-
-  // 2. Abertura do Modal
-  ctaButton.addEventListener('click', (e) => {
-    e.preventDefault();
-    leadModal.classList.add('active');
-    document.body.style.overflow = 'hidden';
-
-    // Registra clique via API
-    try {
-      fetch('/api/clicks', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ version: activeVersion })
-      });
-    } catch (err) {
-      console.error(err);
-    }
-  });
-
-  // Fechamento
-  function closeModal() {
-    leadModal.classList.remove('active');
-    document.body.style.overflow = '';
-  }
-
-  modalClose.addEventListener('click', closeModal);
-  leadModal.addEventListener('click', (e) => {
-    if (e.target === leadModal) closeModal();
-  });
-
-  // Máscara de telefone
-  function maskPhone(input) {
-    let value = input.value.replace(/\D/g, "");
-    if (value.length > 11) value = value.slice(0, 11);
-    
-    if (value.length > 10) {
-      input.value = `(${value.slice(0, 2)}) ${value.slice(2, 7)}-${value.slice(7)}`;
-    } else if (value.length > 5) {
-      input.value = `(${value.slice(0, 2)}) ${value.slice(2, 6)}-${value.slice(6)}`;
-    } else if (value.length > 2) {
-      input.value = `(${value.slice(0, 2)}) ${value.slice(2)}`;
-    } else if (value.length > 0) {
-      input.value = `(${value}`;
-    }
-  }
-
-  // 3. Envio do Formulário Final
-  leadForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    
-    submitBtn.disabled = true;
-    submitBtn.classList.add('loading');
-    submitBtn.querySelector('.submit-btn-text').textContent = 'REDIRECIONANDO...';
-
-    // Ajusta formato dos arrays de escolha múltipla para strings amigáveis separadas por vírgula antes de enviar
-    const formattedData = {};
-    Object.keys(leadAnswers).forEach(key => {
-      const val = leadAnswers[key];
-      if (Array.isArray(val)) {
-        formattedData[key] = val.join(', ');
-      } else {
-        formattedData[key] = val;
-      }
+    // Format arrays as comma-separated strings
+    const payload = {};
+    Object.keys(leadAnswers).forEach(k => {
+      const v = leadAnswers[k];
+      payload[k] = Array.isArray(v) ? v.join(', ') : v;
     });
 
     try {
-      const response = await fetch('/api/leads', {
+      const res  = await fetch('/api/submit', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          version: activeVersion,
-          data: formattedData
-        })
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+
+      let url = data.whatsappUrl || whatsappUrl;
+      // Replace placeholders like {name}, {whatsapp}
+      Object.keys(payload).forEach(k => {
+        url = url.replace(`{${k}}`, encodeURIComponent(payload[k] || ''));
       });
 
-      if (!response.ok) throw new Error('Erro ao registrar lead');
-      const data = await response.json();
-
-      if (data.success && data.redirectUrl) {
-        // Avança a barra para 100% antes de ir
-        percentIndicator.textContent = '100% concluído';
-        progressBarFill.style.width = '100%';
-        
-        setTimeout(() => {
-          window.location.href = data.redirectUrl;
-        }, 300);
-      } else {
-        throw new Error('URL de redirecionamento inválida');
-      }
-
+      setTimeout(() => { window.location.href = url; }, 300);
     } catch (err) {
       console.error(err);
-      alert('Erro ao enviar respostas. Por favor, revise os dados ou tente novamente.');
-      submitBtn.disabled = false;
-      submitBtn.classList.remove('loading');
-      submitBtn.querySelector('.submit-btn-text').textContent = 'FINALIZAR E REDIRECIONAR';
+      alert('Erro ao enviar. Tente novamente.');
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Enviar e Agendar →';
+      }
+    }
+  }
+
+  // ── Open modal ────────────────────────────────────────────────────────────
+  ctaBtn.addEventListener('click', () => {
+    backdrop.classList.add('active');
+    document.body.style.overflow = 'hidden';
+    fetch('/api/click', { method: 'POST' }).catch(() => {});
+  });
+
+  // Close on backdrop click
+  backdrop.addEventListener('click', e => {
+    if (e.target === backdrop) {
+      backdrop.classList.remove('active');
+      document.body.style.overflow = '';
     }
   });
 
-  // Inicializa a configuração do formulário
-  loadFormConfig();
+  // ── Phone mask ────────────────────────────────────────────────────────────
+  function maskPhone(inp) {
+    let v = inp.value.replace(/\D/g, '').slice(0, 11);
+    if (v.length > 10)      inp.value = `(${v.slice(0,2)}) ${v.slice(2,7)}-${v.slice(7)}`;
+    else if (v.length > 5)  inp.value = `(${v.slice(0,2)}) ${v.slice(2,6)}-${v.slice(6)}`;
+    else if (v.length > 2)  inp.value = `(${v.slice(0,2)}) ${v.slice(2)}`;
+    else if (v.length > 0)  inp.value = `(${v}`;
+  }
+
+  // ── Init ──────────────────────────────────────────────────────────────────
+  await loadConfig();
 });
