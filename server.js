@@ -8,6 +8,11 @@ const DB_PATH = path.join(__dirname, 'db.json');
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
+// Rota amigável para o Analytics
+app.get('/analytics', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'analytics.html'));
+});
+
 // ── Helpers ──────────────────────────────────────────────────────────────────
 function readDB() {
   return JSON.parse(fs.readFileSync(DB_PATH, 'utf8'));
