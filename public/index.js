@@ -298,24 +298,28 @@ document.addEventListener('DOMContentLoaded', async () => {
     // 2. Dispara o evento de Lead do Meta Pixel de forma isolada
     try {
       if (typeof window.fbq === 'function') {
-        window.fbq('track', 'Lead');
+        window.fbq('track', 'Lead', {}, {test_event_code: 'TEST71174'});
       }
     } catch (metaErr) {
       console.error('Meta Pixel error (non-fatal):', metaErr);
     }
 
-    // 3. Monta a URL e redireciona instantaneamente
+    // 3. Monta a URL e redireciona após um pequeno delay para o Pixel completar o envio
     let url = whatsappUrl || '';
     if (url) {
       Object.keys(payload).forEach(k => {
         const val = payload[k] !== undefined && payload[k] !== null ? payload[k] : '';
         url = url.split(`{${k}}`).join(encodeURIComponent(val));
       });
-      window.location.href = url;
+      setTimeout(() => {
+        window.location.href = url;
+      }, 600);
     } else {
       console.error('Nenhuma URL do WhatsApp configurada.');
       alert('Cadastro concluído com sucesso!');
-      window.location.href = 'https://api.whatsapp.com/send/?phone=5541984169584';
+      setTimeout(() => {
+        window.location.href = 'https://api.whatsapp.com/send/?phone=5541984169584';
+      }, 600);
     }
   }
 
