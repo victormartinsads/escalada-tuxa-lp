@@ -304,6 +304,19 @@ document.addEventListener('DOMContentLoaded', async () => {
       console.error('Meta Pixel error (non-fatal):', metaErr);
     }
 
+    // 2.2. Dispara o evento de Form Submit no Google Tag Manager (GTM)
+    try {
+      window.dataLayer = window.dataLayer || [];
+      window.dataLayer.push({
+        event: 'formSubmit',
+        leadName: payload.name,
+        leadEmail: payload.email,
+        leadWhatsapp: payload.whatsapp
+      });
+    } catch (gtmErr) {
+      console.error('GTM event push error (non-fatal):', gtmErr);
+    }
+
     // 3. Monta a URL e redireciona após um pequeno delay para o Pixel completar o envio
     let url = whatsappUrl || '';
     if (url) {
