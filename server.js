@@ -3,6 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const https = require('https');
 const http = require('http');
+const crypto = require('crypto');
 const app = express();
 const PORT = 3000;
 const DB_PATH = path.join(__dirname, 'db.json');
@@ -16,6 +17,54 @@ app.get('/analytics', (req, res) => {
 });
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
+function sha256(text) {
+  if (!text) return '';
+  const normalized = text.toString().trim().toLowerCase();
+  return crypto.createHash('sha256').update(normalized).digest('hex');
+}
+
+function normalizePhone(phone) {
+  if (!phone) return '';
+  let digits = phone.toString().replace(/\D/g, '');
+  if (digits.length >= 10 && !digits.startsWith('55')) {
+    digits = '55' + digits;
+  }
+  return digits;
+}
+
+async function sendMetaCAPIEvent(eventName, userData = {}, customData = {}, req) {
+  const pixelId = '2085599052313814';
+  const accessToken = 'EAASAFa03R9QBSGDhZBGwOewHcgNUnv4Tzs36kKuCZCtapY7NHFSZA1rPJp1Mgqa57gsvUP6lA4SzLIFsjfB8d3PhZBkFm1ws0Up3Oy1u82i7xZB94gZCYqSuZAaPK99bvqavSZBrZA4iC2Yln5YBEW5atn7V2w4CqApiqXqgZBAr4d7JTO1ZCFkbPkpItZCTNR3C5gZDZD';
+  
+  const clientIp = req ? (req.headers['x-forwarded-for'] || req.socket.remoteAddress || '').split(',')[0].trim() : '';
+  const clientUserAgent = req ? req.headers['user-agent'] : '';
+
+  const eventData = {
+    event_name: eventName,
+    event_time: Math.floor(Date.now() / 1000),
+    action_source: 'website',
+    event_source_url: 'https://escalada-tuxa-lp.vercel.app',
+    user_data: {
+      client_ip_address: clientIp,
+      client_user_agent: clientUserAgent,
+      ...userData
+    },
+    custom_data: customData
+  };
+
+  // Usar o código de teste do gerenciador de eventos
+  eventData.test_event_code = 'TEST71174';
+
+  const url = `https://graph.facebook.com/v17.0/${pixelId}/events?access_token=${accessToken}`;
+  
+  try {
+    const res = await postJSON(url, { data: [eventData] });
+    console.log(`Meta CAPI [${eventName}] response status:`, res.status);
+    return res;
+  } catch (err) {
+    console.error(`Erro ao enviar Meta CAPI [${eventName}]:`, err.message);
+  }
+}
 function postJSON(urlStr, data) {
   return new Promise((resolve, reject) => {
     try {
@@ -97,6 +146,10 @@ app.post('/api/visit', (req, res) => {
   const db = readDB();
   db.stats.visits++;
   writeDB(db);
+
+  // Enviar PageView para a Meta CAPI em background
+  sendMetaCAPIEvent('PageView', {}, {}, req).catch((err) => console.error('Erro ao enviar PageView CAPI:', err.message));
+
   res.json({ ok: true });
 });
 
@@ -133,6 +186,34 @@ app.post('/api/submit', async (req, res) => {
   db.leads.push(lead);
   db.stats.submissions++;
   writeDB(db);
+
+  // Enviar Lead para Meta CAPI (Server-Side)
+  try {
+    const hashedEmail = sha256(req.body.email);
+    const normalizedPhone = normalizePhone(req.body.whatsapp);
+    const hashedPhone = sha256(normalizedPhone);
+    const firstName = (req.body.name || '').split(' ')[0];
+    const hashedFirstName = sha256(firstName);
+
+    const userData = {
+      em: hashedEmail ? [hashedEmail] : undefined,
+      ph: hashedPhone ? [hashedPhone] : undefined,
+      fn: hashedFirstName ? [hashedFirstName] : undefined
+    };
+
+    const customData = {
+      role: req.body.role || '',
+      revenue: req.body.revenue || '',
+      operation_time: req.body.operation_time || '',
+      employees: req.body.employees || '',
+      reality: req.body.reality || '',
+      obstacles: req.body.obstacles || ''
+    };
+
+    await sendMetaCAPIEvent('Lead', userData, customData, req);
+  } catch (capiErr) {
+    console.error('Erro ao enviar Lead CAPI:', capiErr.message);
+  }
 
   // Enviar para o Webhook (se configurado via painel ou env)
   const webhookUrl = process.env.WEBHOOK_URL || process.env.GOOGLE_SHEETS_WEBHOOK_URL || db.configs.googleSheetsWebhookUrl || "https://n8n.serveragenciaand.com/webhook/a681145c-c866-43f1-8a20-98a3dbb21a05";
